@@ -1,0 +1,44 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net48</TargetFramework>
+		<Authors>xp44m</Authors>
+		<Company>34696643@qq.com</Company>
+		<Description>A tool for parsing excel formula.</Description>
+		<Copyright>xp44mm</Copyright>
+		<PackageLicenseExpression>LGPL-3.0-or-later</PackageLicenseExpression>
+		<RepositoryUrl>https://github.com/xp44mm/ExcelCompiler</RepositoryUrl>
+		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+		<PackageReleaseNotes>first time</PackageReleaseNotes>
+		<PackageProjectUrl>https://github.com/xp44mm/ExcelCompiler</PackageProjectUrl>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Compile Include="ExcelToken.fs" />
+		<Compile Include="ExcelExpr.fs" />
+		<Compile Include="NameParser.fs" />
+		<Compile Include="Validation.fs" />
+		<None Include="excel.lex" />
+		<Compile Include="ExcelDFA.fs" />
+		<Compile Include="ExcelTokenNormalizer.fs" />
+		<None Include="excel.yacc" />
+		<Compile Include="ExcelParsingTable.fs" />
+		<Compile Include="ExcelExprTranslator.fs" />
+		<Compile Include="ExcelExprDriver.fs" />
+		<Compile Include="ExprRender.fs" />
+		<Compile Include="RenderFSharp.fs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="FSharp.Idioms" Version="1.1.8" />
+		<PackageReference Include="FSharp.Literals" Version="2.2.0" />
+		<PackageReference Include="FSharpCompiler.Analyzing" Version="1.0.3" />
+		<PackageReference Include="FSharpCompiler.Parsing" Version="1.0.4" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Update="FSharp.Core" Version="5.0.1" />
+		<PackageReference Update="System.ValueTuple" Version="4.5.0" />
+	</ItemGroup>
+
+</Project>
