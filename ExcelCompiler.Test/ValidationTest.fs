@@ -3,6 +3,7 @@
 open Xunit
 open Xunit.Abstractions
 open FSharp.Literals
+open FSharp.xUnit
 
 type ValidationTest(output: ITestOutputHelper) =
     let show res =
@@ -11,21 +12,36 @@ type ValidationTest(output: ITestOutputHelper) =
         |> output.WriteLine
 
     [<Fact>]
-    member this.``message test``() =
-        let data =
-            [
-                ("Sheet1","$A$1"),"='C:\\Users\\cuishengli\\Desktop\\[工作簿1.xlsx]Sheet1'!$A$1";
-                ("Sheet1","$A$2"),"=[工作簿1.xlsx]Sheet1!$D$15";
-                ("Tower","$M$36"),"='C:\\Program Files\\Microsoft Office\\root\\Office16\\LIBRARY\\Analysis\\ATPVBAEN.XLA'!mround(C36,0.25)";
-                ("shee2","A1"),"=format(\"x{0:00}\",K2)";
-                ("shee2","B2"),"=[工作簿1.xlsx]Sheet1!$A$1";
-            ]
+    member this.``message test 1``() =
+        let x = "='C:\\Users\\cuishengli\\Desktop\\[工作簿1.xlsx]Sheet1'!$A$1"
+        let tokens = ExcelToken.tokenize x |> List.ofSeq
+        let y = Validation.message tokens
+        Should.equal y "外部引用文件"
 
+    [<Fact>]
+    member this.``message test 2``() =
+        let x = "=[工作簿1.xlsx]Sheet1!$D$15"
+        let tokens = ExcelToken.tokenize x |> List.ofSeq
+        let y = Validation.message tokens
+        Should.equal y "中括号"
 
-        for (sh,ad),f in data do
-            let tokens = ExcelToken.tokenize f |> List.ofSeq
+    [<Fact>]
+    member this.``message test 3``() =
+        let x = "='C:\\Program Files\\Microsoft Office\\root\\Office16\\LIBRARY\\Analysis\\ATPVBAEN.XLA'!mround(C36,0.25)"
+        let tokens = ExcelToken.tokenize x |> List.ofSeq
+        let y = Validation.message tokens
+        Should.equal y "外部函数"
 
-            let y = Validation.message tokens
-            match y with
-            | "" -> ()
-            | _ -> output.WriteLine(sprintf "%s!%s:%s" sh ad y)
+    [<Fact>]
+    member this.``message test 4``() =
+        let x = """=format(\"x{0:00}\",K2)"""
+        let tokens = ExcelToken.tokenize x |> List.ofSeq
+        let y = Validation.message tokens
+        Should.equal y ""
+
+    [<Fact>]
+    member this.``message test 5``() =
+        let x = "=[工作簿1.xlsx]Sheet1!$A$1"
+        let tokens = ExcelToken.tokenize x |> List.ofSeq
+        let y = Validation.message tokens
+        Should.equal y "中括号"

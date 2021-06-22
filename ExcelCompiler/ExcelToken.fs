@@ -97,7 +97,6 @@ type ExcelToken =
         | REFERENCE (ws,rg) ->  failwith "(ws,rg)"
         | x -> x.tag
 
-
     static member tokenize(inp:string) =
         ///isUnary=true表示当前元素的下一个元素是一元正负。
         let rec loop isUnary (inp:string) =

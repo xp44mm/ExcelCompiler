@@ -15,14 +15,9 @@ let tokensToExpr (normTokens:seq<ExcelToken>) =
 
 ///解析公式
 let parse(formula:string) =
-    //let tokens =
-
     formula
     |> ExcelToken.tokenize
     |> ExcelTokenNormalizer.normalize
     |> tokensToExpr
 
-    //let parsingTree = parser.parse(tokens,fun tok -> tok.tag)
-    //let expr = ExcelExprTranslator.translateFormula parsingTree
-    //expr
 

@@ -3,6 +3,7 @@
 open Xunit
 open Xunit.Abstractions
 open FSharp.Literals
+open FSharp.xUnit
 
 type RenderFSharpTest(output: ITestOutputHelper) =
     let show res =
@@ -14,16 +15,16 @@ type RenderFSharpTest(output: ITestOutputHelper) =
     member this.``smoke test``() =
         let formula = "=SQRT($C$9/$C$8)"
         let expr = ExcelExprDriver.parse formula
-        let fsharpExpr = 
-            RenderFSharp.norm expr
-        show fsharpExpr
+        let y = RenderFSharp.norm expr
+        Should.equal y "(C9/C8)**0.5"
 
     [<Fact>]
     member this.``pi test``() =
         let formula = "=pi()*3"
         let expr = ExcelExprDriver.parse formula
-        let fsharpExpr = 
-            RenderFSharp.norm expr
-        show fsharpExpr
+        show expr
+
+        let y = RenderFSharp.norm expr
+        Should.equal y "Math.PI*3.0"
 
 
