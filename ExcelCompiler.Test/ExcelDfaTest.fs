@@ -23,10 +23,9 @@ type ExcelDfaTest(output:ITestOutputHelper) =
 
     let filePath = Path.Combine(locatePath, @"excel.lex")
     let text = File.ReadAllText(filePath)
+    let dfa = Lex.generateDFA text
 
-    let dfa = LexFileDriver.parse text
-
-    [<Fact()>] //Skip="done"
+    [<Fact(Skip="done")>] //
     member this.``generate DFA``() =
         let result =
             [
