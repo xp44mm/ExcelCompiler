@@ -59,14 +59,15 @@ type ExcelParsingTableTest(output:ITestOutputHelper) =
     [<Fact(Skip="done")>] // 
     member this.``5-generate parsing table``() =
         let yacc = ParseTable.create(yaccFile.mainRules, yaccFile.precedences)
-
-        //解析表数据
         let result =
             [
                 "module ExcelCompiler.ExcelParsingTable"
-                "let rules = " + Render.stringify yacc.rules
-                "let kernelSymbols = " + Render.stringify yacc.kernelSymbols
-                "let parsingTable = " + Render.stringify yacc.parsingTable
+                "let rules = " + Literal.stringify yacc.rules
+                "let actions = " + Literal.stringify yacc.actions
+                "let kernelSymbols = " + Literal.stringify yacc.kernelSymbols
+                "open FSharpCompiler.Parsing"
+                "let pconfig = ParserConfig( rules, actions, kernelSymbols )"
+
             ] |> String.concat Environment.NewLine
         let outputDir = Path.Combine(locatePath, "ExcelParsingTable.fs")
         File.WriteAllText(outputDir,result)
@@ -77,9 +78,8 @@ type ExcelParsingTableTest(output:ITestOutputHelper) =
         let yacc = ParseTable.create(yaccFile.mainRules, yaccFile.precedences)
 
         Should.equal yacc.rules         ExcelParsingTable.rules
+        Should.equal yacc.actions       ExcelParsingTable.actions
         Should.equal yacc.kernelSymbols ExcelParsingTable.kernelSymbols
-        Should.equal yacc.parsingTable  ExcelParsingTable.parsingTable
-
 
 
 
