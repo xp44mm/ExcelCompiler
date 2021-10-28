@@ -5,7 +5,7 @@ let parsingTree (normTokens:seq<ExcelToken>) = ExcelParsingTable.pconfig.parse(n
 let tokensToExpr (normTokens:seq<ExcelToken>) = 
     normTokens
     |> parsingTree
-    |> ExcelExprTranslator.translateFormula 
+    |> ExcelExprTranslation.translate
     
 ///解析公式
 let parse(formula:string) =
@@ -13,5 +13,3 @@ let parse(formula:string) =
     |> ExcelToken.tokenize
     |> ExcelTokenNormalizer.normalize
     |> tokensToExpr
-
-

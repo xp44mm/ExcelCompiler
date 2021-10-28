@@ -5,7 +5,7 @@ open Xunit.Abstractions
 open FSharp.Literals
 open FSharp.xUnit
 
-type ExcelExprTranslatorTest(output: ITestOutputHelper) =
+type ExcelExprTranslationTest(output: ITestOutputHelper) =
     let show res =
         res
         |> Render.stringify

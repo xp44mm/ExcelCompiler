@@ -81,6 +81,65 @@ type ExcelParsingTableTest(output:ITestOutputHelper) =
         Should.equal yacc.actions       ExcelParsingTable.actions
         Should.equal yacc.kernelSymbols ExcelParsingTable.kernelSymbols
 
+    [<Fact>]
+    member this.``6 - generate translation framework``() =
+        let renderToken tag lexeme =
+            match tag with
+            //| "NUMBER"     -> " NUMBER" _
+            //| "INTEGER"    -> " INTEGER" _
+            //| "QUOTE"      -> " QUOTE" _
+            //| "APOSTROPHE" -> " APOSTROPHE" _
+            //| "DOLLAR"     -> " DOLLAR" _
+            //| "ID"         -> " ID" _
+            //| "FUNCTION"   -> " FUNCTION" _
+            //| "ERROR"      -> " ERROR" _
+            //| "REFERENCE"  -> " REFERENCE" _
+
+            | "FALSE"      -> " FALSE"
+            | "TRUE"       -> " TRUE"
+            | "!"          -> " EXCLAM"
+            | ":"          -> " COLON"
+            | ","          -> " COMMA"
+            | "("          -> " LPAREN"
+            | ")"          -> " RPAREN"
+            | "="          -> " EQ"
+            | "<>"         -> " NE"
+            | "<"          -> " LT"
+            | "<="         -> " LE"
+            | ">"          -> " GT"
+            | ">="         -> " GE"
+            | "&"          -> " AMPERSAND"
+            | "+"          -> " ADD"
+            | "-"          -> " SUB"
+            | "*"          -> " MUL"
+            | "/"          -> " DIV"
+            | "^"          -> " CARET"
+            | "%"          -> " PERCENT"
+            | "POSITIVE"   -> " POSITIVE"
+            | "NEGATIVE"   -> " NEGATIVE"
+            | "{"          -> " LBRACE"
+            | "}"          -> " RBRACE"
+            | "["          -> " LBRACKET"
+            | "]"          -> " RBRACKET"
+            | _ -> $"({tag} {lexeme})"
+
+
+
+            //| ","      -> " COMMA"
+            //| ":"      -> " COLON"
+            //| "["      -> " LEFT_BRACK"
+            //| "]"      -> " RIGHT_BRACK"
+            //| "{"      -> " LEFT_BRACE"
+            //| "}"      -> " RIGHT_BRACE"
+            //| "NULL"   -> " NULL"
+            //| "FALSE"  -> " FALSE"
+            //| "TRUE"   -> " TRUE"
+            //| _ -> $"({tag} {lexeme})"
+
+        let generate = TranslationGenerator.generateConfig renderToken
+        let grammar = Grammar.from yaccFile.mainRules
+        let code = generate grammar.nonterminals yaccFile.mainRules
+        output.WriteLine(code)
 
 
 
