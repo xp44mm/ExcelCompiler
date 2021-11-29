@@ -11,5 +11,6 @@ let tokensToExpr (normTokens:seq<ExcelToken>) =
 let parse(formula:string) =
     formula
     |> ExcelToken.tokenize
-    |> ExcelTokenNormalizer.normalize
+    |> ExcelDFA.split
+    |> Seq.concat
     |> tokensToExpr

@@ -16,12 +16,12 @@
 
 	<ItemGroup>
 		<Compile Include="ExcelToken.fs" />
+		<Compile Include="ExcelTokenUtils.fs" />
 		<Compile Include="ExcelExpr.fs" />
 		<Compile Include="NameParser.fs" />
 		<Compile Include="Validation.fs" />
-		<None Include="excel.lex" />
+		<None Include="excel.fslex" />
 		<Compile Include="ExcelDFA.fs" />
-		<Compile Include="ExcelTokenNormalizer.fs" />
 		<None Include="excel.yacc" />
 		<Compile Include="ExcelParsingTable.fs" />
 		
@@ -36,14 +36,15 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="FSharp.Idioms" Version="1.1.14" />
+		<PackageReference Include="FSharp.Idioms" Version="1.1.15" />
 		<PackageReference Include="FSharp.Literals" Version="2.2.5" />
 		<PackageReference Include="FSharpCompiler.Analyzing" Version="1.1.0" />
 		<PackageReference Include="FSharpCompiler.Parsing" Version="1.1.3" />
+		<PackageReference Include="FslexFsyacc.Runtime" Version="1.0.1" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Update="FSharp.Core" Version="6.0.0" />
+		<PackageReference Update="FSharp.Core" Version="6.0.1" />
 		<PackageReference Update="System.ValueTuple" Version="4.5.0" />
 	</ItemGroup>
 

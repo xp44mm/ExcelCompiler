@@ -1,7 +1,32 @@
 module ExcelCompiler.ExcelDFA
-let nextStates = Map [0u,Map ["%",42u;"&",36u;"(",8u;")",29u;"*",39u;"+",37u;",",10u;"-",38u;"/",40u;"<",32u;"<=",33u;"<>",31u;"=",30u;">",34u;">=",35u;"APOSTROPHE",13u;"DOLLAR",19u;"ERROR",26u;"FALSE",27u;"ID",6u;"INTEGER",21u;"NEGATIVE",2u;"NUMBER",24u;"POSITIVE",1u;"QUOTE",25u;"TRUE",28u;"[",45u;"]",46u;"^",41u;"{",43u;"}",44u];1u,Map ["INTEGER",3u;"NUMBER",5u];2u,Map ["INTEGER",3u;"NUMBER",5u];3u,Map [":",4u];6u,Map ["!",18u;"(",7u;":",15u];8u,Map [",",9u];10u,Map [")",12u;",",11u];13u,Map ["!",18u;":",14u];14u,Map ["APOSTROPHE",16u;"ID",16u];15u,Map ["APOSTROPHE",16u;"DOLLAR",23u;"ID",17u;"INTEGER",23u];16u,Map ["!",18u];17u,Map ["!",18u];18u,Map ["DOLLAR",19u;"ID",19u;"INTEGER",20u];19u,Map [":",22u];20u,Map [":",22u];21u,Map [":",22u];22u,Map ["DOLLAR",23u;"ID",23u;"INTEGER",23u]]
-let lexemesFromFinal = Map [4u,set [1u;2u];7u,set [6u];9u,set [8u];11u,set [10u];12u,set [10u]]
-let universalFinals = set [1u;2u;3u;4u;5u;6u;7u;8u;9u;10u;11u;12u;17u;19u;21u;23u;24u;25u;26u;27u;28u;29u;30u;31u;32u;33u;34u;35u;36u;37u;38u;39u;40u;41u;42u;43u;44u;45u;46u]
-let indicesFromFinal = Map [1u,29;2u,30;3u,1;4u,0;5u,1;6u,6;7u,2;8u,14;9u,3;10u,13;11u,4;12u,5;17u,6;19u,6;21u,7;23u,6;24u,8;25u,9;26u,10;27u,11;28u,12;29u,15;30u,16;31u,17;32u,18;33u,19;34u,20;35u,21;36u,22;37u,23;38u,24;39u,25;40u,26;41u,27;42u,28;43u,31;44u,32;45u,33;46u,34]
-open FSharpCompiler.Analyzing
-let analyzer = LexicalAnalyzer( nextStates, lexemesFromFinal, universalFinals, indicesFromFinal )
+let nextStates = Map [0u,Map ["%",23u;"&",23u;"(",7u;")",23u;"*",23u;"+",23u;",",9u;"-",23u;"/",23u;"<",23u;"<=",23u;"<>",23u;"=",23u;">",23u;">=",23u;"APOSTROPHE",12u;"DOLLAR",18u;"ERROR",23u;"FALSE",23u;"ID",5u;"INTEGER",20u;"NEGATIVE",1u;"NUMBER",23u;"POSITIVE",1u;"QUOTE",23u;"TRUE",23u;"[",23u;"]",23u;"^",23u;"{",23u;"}",23u];1u,Map ["INTEGER",2u;"NUMBER",4u];2u,Map [":",3u];5u,Map ["!",17u;"(",6u;":",14u];7u,Map [",",8u];9u,Map [")",11u;",",10u];12u,Map ["!",17u;":",13u];13u,Map ["APOSTROPHE",15u;"ID",15u];14u,Map ["APOSTROPHE",15u;"DOLLAR",22u;"ID",16u;"INTEGER",22u];15u,Map ["!",17u];16u,Map ["!",17u];17u,Map ["DOLLAR",18u;"ID",18u;"INTEGER",19u];18u,Map [":",21u];19u,Map [":",21u];20u,Map [":",21u];21u,Map ["DOLLAR",22u;"ID",22u;"INTEGER",22u]]
+let lexemesFromFinal = Map [3u,set [1u];6u,set [5u];8u,set [7u];10u,set [9u];11u,set [9u]]
+let universalFinals = set [1u;2u;3u;4u;5u;6u;7u;8u;9u;10u;11u;16u;18u;20u;22u;23u]
+let indicesFromFinal = Map [1u,8;2u,1;3u,0;4u,1;5u,6;6u,2;7u,8;8u,3;9u,8;10u,4;11u,5;16u,6;18u,6;20u,7;22u,6;23u,8]
+let header = "open ExcelCompiler.ExcelTokenUtils"
+let semantics = ["lexbuf";"signNumber lexbuf";"[functionFromId lexbuf.Head]";"appendNA lexbuf";"appendNA lexbuf";"appendNA lexbuf";"[REFERENCE(getRange lexbuf)]";"[numberFromInteger lexbuf.Head]";"lexbuf"]
+open ExcelCompiler.ExcelTokenUtils
+let mappers = [|
+    fun (lexbuf:_ list) ->
+        lexbuf
+    fun (lexbuf:_ list) ->
+        signNumber lexbuf
+    fun (lexbuf:_ list) ->
+        [functionFromId lexbuf.Head]
+    fun (lexbuf:_ list) ->
+        appendNA lexbuf
+    fun (lexbuf:_ list) ->
+        appendNA lexbuf
+    fun (lexbuf:_ list) ->
+        appendNA lexbuf
+    fun (lexbuf:_ list) ->
+        [REFERENCE(getRange lexbuf)]
+    fun (lexbuf:_ list) ->
+        [numberFromInteger lexbuf.Head]
+    fun (lexbuf:_ list) ->
+        lexbuf
+|]
+open FslexFsyacc.Runtime
+let analyzer = LexicalAnalyzer(nextStates, lexemesFromFinal, universalFinals, indicesFromFinal, mappers)
+let split (tokens:seq<_>) = 
+    analyzer.split(tokens,getTag)
