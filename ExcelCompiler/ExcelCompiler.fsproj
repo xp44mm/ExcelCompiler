@@ -9,9 +9,9 @@
 		<PackageLicenseExpression>LGPL-3.0-or-later</PackageLicenseExpression>
 		<RepositoryUrl>https://github.com/xp44mm/ExcelCompiler</RepositoryUrl>
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-		<PackageReleaseNotes>update translation</PackageReleaseNotes>
+		<PackageReleaseNotes>use FslexFsyacc</PackageReleaseNotes>
 		<PackageProjectUrl>https://github.com/xp44mm/ExcelCompiler</PackageProjectUrl>
-		<Version>1.0.5</Version>
+		<Version>1.1.0</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -22,13 +22,8 @@
 		<Compile Include="Validation.fs" />
 		<None Include="excel.fslex" />
 		<Compile Include="ExcelDFA.fs" />
-		<None Include="excel.yacc" />
+		<None Include="excel.fsyacc" />
 		<Compile Include="ExcelParsingTable.fs" />
-		
-		
-		<Compile Include="ExcelExprTranslation.fs" />
-		
-		
 		<Compile Include="ExcelExprDriver.fs" />
 		<Compile Include="ExprRender.fs" />
 		<Compile Include="RenderFSharp.fs" />
@@ -38,8 +33,6 @@
 	<ItemGroup>
 		<PackageReference Include="FSharp.Idioms" Version="1.1.15" />
 		<PackageReference Include="FSharp.Literals" Version="2.2.5" />
-		<PackageReference Include="FSharpCompiler.Analyzing" Version="1.1.0" />
-		<PackageReference Include="FSharpCompiler.Parsing" Version="1.1.3" />
 		<PackageReference Include="FslexFsyacc.Runtime" Version="1.0.1" />
 	</ItemGroup>
 
