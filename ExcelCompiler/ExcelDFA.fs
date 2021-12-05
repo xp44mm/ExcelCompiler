@@ -6,27 +6,41 @@ let indicesFromFinal = Map [1u,8;2u,1;3u,0;4u,1;5u,6;6u,2;7u,8;8u,3;9u,8;10u,4;1
 let header = "open ExcelCompiler.ExcelTokenUtils"
 let semantics = ["lexbuf";"signNumber lexbuf";"[functionFromId lexbuf.Head]";"appendNA lexbuf";"appendNA lexbuf";"appendNA lexbuf";"[REFERENCE(getRange lexbuf)]";"[numberFromInteger lexbuf.Head]";"lexbuf"]
 open ExcelCompiler.ExcelTokenUtils
-let mappers = [|
-    fun (lexbuf:_ list) ->
+let finalMappers = Map [
+    1u, fun (lexbuf:_ list) ->
         lexbuf
-    fun (lexbuf:_ list) ->
+    2u, fun (lexbuf:_ list) ->
         signNumber lexbuf
-    fun (lexbuf:_ list) ->
-        [functionFromId lexbuf.Head]
-    fun (lexbuf:_ list) ->
-        appendNA lexbuf
-    fun (lexbuf:_ list) ->
-        appendNA lexbuf
-    fun (lexbuf:_ list) ->
-        appendNA lexbuf
-    fun (lexbuf:_ list) ->
-        [REFERENCE(getRange lexbuf)]
-    fun (lexbuf:_ list) ->
-        [numberFromInteger lexbuf.Head]
-    fun (lexbuf:_ list) ->
+    3u, fun (lexbuf:_ list) ->
         lexbuf
-|]
+    4u, fun (lexbuf:_ list) ->
+        signNumber lexbuf
+    5u, fun (lexbuf:_ list) ->
+        [REFERENCE(getRange lexbuf)]
+    6u, fun (lexbuf:_ list) ->
+        [functionFromId lexbuf.Head]
+    7u, fun (lexbuf:_ list) ->
+        lexbuf
+    8u, fun (lexbuf:_ list) ->
+        appendNA lexbuf
+    9u, fun (lexbuf:_ list) ->
+        lexbuf
+    10u, fun (lexbuf:_ list) ->
+        appendNA lexbuf
+    11u, fun (lexbuf:_ list) ->
+        appendNA lexbuf
+    16u, fun (lexbuf:_ list) ->
+        [REFERENCE(getRange lexbuf)]
+    18u, fun (lexbuf:_ list) ->
+        [REFERENCE(getRange lexbuf)]
+    20u, fun (lexbuf:_ list) ->
+        [numberFromInteger lexbuf.Head]
+    22u, fun (lexbuf:_ list) ->
+        [REFERENCE(getRange lexbuf)]
+    23u, fun (lexbuf:_ list) ->
+        lexbuf
+]
 open FslexFsyacc.Runtime
-let analyzer = LexicalAnalyzer(nextStates, lexemesFromFinal, universalFinals, indicesFromFinal, mappers)
-let split (tokens:seq<_>) = 
-    analyzer.split(tokens,getTag)
+let analyzer = Analyzer(nextStates, lexemesFromFinal, universalFinals, finalMappers)
+let analyze (tokens:seq<_>) = 
+    analyzer.analyze(tokens,getTag)

@@ -6,7 +6,7 @@ let tokenize(formula:string) = ExcelToken.tokenize formula
 let normToken(formula:string) = 
     formula 
     |> ExcelToken.tokenize  
-    |> ExcelDFA.split
+    |> ExcelDFA.analyze
     |> Seq.concat
 
 let parseToExpr(formula:string) = 

@@ -27,7 +27,7 @@ type ExcelDfaTest(output:ITestOutputHelper) =
         let moduleName = $"ExcelCompiler.{name}"
 
         let y = fslex.toFslexDFA()
-        let result = y.generateModule(moduleName)
+        let result = y.generate(moduleName)
 
         let outputDir = Path.Combine(sourcePath, $"{name}.fs")
         File.WriteAllText(outputDir, result)

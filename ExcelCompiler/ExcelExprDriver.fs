@@ -11,6 +11,6 @@
 let parse(formula:string) =
     formula
     |> ExcelToken.tokenize
-    |> ExcelDFA.split
+    |> ExcelDFA.analyze
     |> Seq.concat
     |> ExcelParsingTable.parse
