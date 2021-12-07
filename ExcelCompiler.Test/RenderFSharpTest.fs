@@ -13,14 +13,14 @@ type RenderFSharpTest(output: ITestOutputHelper) =
 
     [<Fact>]
     member this.``smoke test``() =
-        let formula = "=SQRT($C$9/$C$8)"
+        let formula = "SQRT($C$9/$C$8)"
         let expr = ExcelExprDriver.parse formula
         let y = RenderFSharp.norm expr
         Should.equal y "(C9/C8)**0.5"
 
     [<Fact>]
     member this.``pi test``() =
-        let formula = "=pi()*3"
+        let formula = "pi()*3"
         let expr = ExcelExprDriver.parse formula
         show expr
 

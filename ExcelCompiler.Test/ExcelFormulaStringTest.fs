@@ -27,7 +27,7 @@ type ExcelFormulaStringTest(output: ITestOutputHelper) =
 
     [<Fact>]
     member this.``parseToExpr test``() =
-        let x = "=(A1+A2)/2"
+        let x = "(A1+A2)/2"
         let y = ExcelFormulaString.parseToExpr x
         //show y
         let z = Div(Add(Reference([],["A1"]),Reference([],["A2"])),Number "2")

@@ -9,9 +9,9 @@
 		<PackageLicenseExpression>LGPL-3.0-or-later</PackageLicenseExpression>
 		<RepositoryUrl>https://github.com/xp44mm/ExcelCompiler</RepositoryUrl>
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-		<PackageReleaseNotes>update FslexFsyacc</PackageReleaseNotes>
+		<PackageReleaseNotes>ExcelExpr</PackageReleaseNotes>
 		<PackageProjectUrl>https://github.com/xp44mm/ExcelCompiler</PackageProjectUrl>
-		<Version>1.1.1</Version>
+		<Version>1.1.2</Version>
 	</PropertyGroup>
 
 	<ItemGroup>

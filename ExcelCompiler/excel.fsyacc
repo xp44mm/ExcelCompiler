@@ -2,8 +2,6 @@
 open ExcelCompiler.ExcelTokenUtils
 %}
 
-formula : "=" expr { s1 }
-        ;
 expr    : FUNCTION "(" arguments ")" {Func(s0, List.rev s2)}
         | REFERENCE                  {Reference s0}
         | NUMBER                     {Number s0}
@@ -44,10 +42,9 @@ arguments : (* empty *)        {[]}
 
 %%
 
+expr      "ExcelExpr";
 FUNCTION  "string";
 NUMBER    "string";
 QUOTE     "string";
 REFERENCE "string list*string list";
 arguments "ExcelExpr list";
-expr      "ExcelExpr";
-formula   "ExcelExpr";
