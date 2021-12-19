@@ -72,7 +72,7 @@ type ExcelParsingTableTest(output:ITestOutputHelper) =
         let moduleName = $"ExcelCompiler.{name}"
 
         //解析表数据
-        let fsharpCode = parseTbl.generateParseTable(moduleName)
+        let fsharpCode = parseTbl.generate(moduleName)
 
         let outputDir = Path.Combine(sourcePath, $"{name}.fs")
         File.WriteAllText(outputDir,fsharpCode)
