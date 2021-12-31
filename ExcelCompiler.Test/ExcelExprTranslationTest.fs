@@ -13,7 +13,7 @@ type ExcelExprTranslationTest(output: ITestOutputHelper) =
 
 
     [<Fact>]
-    member this.``func test``() =
+    member _.``func test``() =
         let x = "na()"
         let y = ExcelExprDriver.parse x
 
@@ -21,7 +21,7 @@ type ExcelExprTranslationTest(output: ITestOutputHelper) =
         Should.equal y <| Func("na",[])
 
     [<Fact>]
-    member this.``ref test``() =
+    member _.``ref test``() =
         let x = " a1 "
         let y = ExcelExprDriver.parse x
 
@@ -29,7 +29,7 @@ type ExcelExprTranslationTest(output: ITestOutputHelper) =
         Should.equal y <| Reference([],["a1"])
 
     [<Fact>]
-    member this.``number test``() =
+    member _.``number test``() =
         let x = " 1 "
         let y = ExcelExprDriver.parse x
 
@@ -37,7 +37,7 @@ type ExcelExprTranslationTest(output: ITestOutputHelper) =
         Should.equal y <| Number "1"
 
     [<Fact>]
-    member this.``quote test``() =
+    member _.``quote test``() =
         let x = " \"\" "
         let y = ExcelExprDriver.parse x
 
@@ -45,7 +45,7 @@ type ExcelExprTranslationTest(output: ITestOutputHelper) =
         Should.equal y <| Quote "\"\""
 
     [<Fact>]
-    member this.``false test``() =
+    member _.``false test``() =
         let x = " false "
         let y = ExcelExprDriver.parse x
 
@@ -53,7 +53,7 @@ type ExcelExprTranslationTest(output: ITestOutputHelper) =
         Should.equal y <| False
 
     [<Fact>]
-    member this.``true test``() =
+    member _.``true test``() =
         let x = " true "
         let y = ExcelExprDriver.parse x
 
@@ -61,7 +61,7 @@ type ExcelExprTranslationTest(output: ITestOutputHelper) =
         Should.equal y <| True
 
     [<Fact>]
-    member this.``group test``() =
+    member _.``group test``() =
         let x = " (1) "
         let y = ExcelExprDriver.parse x
 
@@ -69,7 +69,7 @@ type ExcelExprTranslationTest(output: ITestOutputHelper) =
         Should.equal y <| Number "1"
 
     [<Fact>]
-    member this.``eq test``() =
+    member _.``eq test``() =
         let x = " 1 = 2 "
         let y = ExcelExprDriver.parse x
 
@@ -77,7 +77,7 @@ type ExcelExprTranslationTest(output: ITestOutputHelper) =
         Should.equal y <| Eq(Number "1", Number "2")
 
     [<Fact>]
-    member this.``gt test``() =
+    member _.``gt test``() =
         let x = " 1 > 2 "
         let y = ExcelExprDriver.parse x
 
@@ -85,7 +85,7 @@ type ExcelExprTranslationTest(output: ITestOutputHelper) =
         Should.equal y <| Gt(Number "1", Number "2")
 
     [<Fact>]
-    member this.``ge test``() =
+    member _.``ge test``() =
         let x = "1 >= 2 "
         let y = ExcelExprDriver.parse x
 
@@ -93,7 +93,7 @@ type ExcelExprTranslationTest(output: ITestOutputHelper) =
         Should.equal y <| Ge(Number "1", Number "2")
 
     [<Fact>]
-    member this.``lt test``() =
+    member _.``lt test``() =
         let x = " 1 < 2 "
         let y = ExcelExprDriver.parse x
 
@@ -101,7 +101,7 @@ type ExcelExprTranslationTest(output: ITestOutputHelper) =
         Should.equal y <| Lt(Number "1", Number "2")
 
     [<Fact>]
-    member this.``le test``() =
+    member _.``le test``() =
         let x = " 1 <= 2 "
         let y = ExcelExprDriver.parse x
 
@@ -109,7 +109,7 @@ type ExcelExprTranslationTest(output: ITestOutputHelper) =
         Should.equal y <| Le(Number "1", Number "2")
 
     [<Fact>]
-    member this.``ne test``() =
+    member _.``ne test``() =
         let x = " 1 <> 2 "
         let y = ExcelExprDriver.parse x
 
@@ -117,7 +117,7 @@ type ExcelExprTranslationTest(output: ITestOutputHelper) =
         Should.equal y <| Ne(Number "1", Number "2")
 
     [<Fact>]
-    member this.``concat test``() =
+    member _.``concat test``() =
         let x = """ "1" & 2 """
         let y = ExcelExprDriver.parse x
 
@@ -125,7 +125,7 @@ type ExcelExprTranslationTest(output: ITestOutputHelper) =
         Should.equal y <| Concat(Quote "\"1\"",Number "2")
 
     [<Fact>]
-    member this.``add test``() =
+    member _.``add test``() =
         let x = """ 1 + 2 """
         let y = ExcelExprDriver.parse x
 
@@ -133,7 +133,7 @@ type ExcelExprTranslationTest(output: ITestOutputHelper) =
         Should.equal y <| Add(Number "1",Number "2")
 
     [<Fact>]
-    member this.``sub test``() =
+    member _.``sub test``() =
         let x = """ 1 - 2 """
         let y = ExcelExprDriver.parse x
 
@@ -141,7 +141,7 @@ type ExcelExprTranslationTest(output: ITestOutputHelper) =
         Should.equal y <| Sub(Number "1",Number "2")
 
     [<Fact>]
-    member this.``mul test``() =
+    member _.``mul test``() =
         let x = """ 1 * 2 """
         let y = ExcelExprDriver.parse x
 
@@ -149,7 +149,7 @@ type ExcelExprTranslationTest(output: ITestOutputHelper) =
         Should.equal y <| Mul(Number "1",Number "2")
 
     [<Fact>]
-    member this.``div test``() =
+    member _.``div test``() =
         let x = """ 1 / 2 """
         let y = ExcelExprDriver.parse x
 
@@ -157,7 +157,7 @@ type ExcelExprTranslationTest(output: ITestOutputHelper) =
         Should.equal y <| Div(Number "1",Number "2")
 
     [<Fact>]
-    member this.``pow test``() =
+    member _.``pow test``() =
         let x = """ 1 ^ 2 """
         let y = ExcelExprDriver.parse x
 
@@ -165,7 +165,7 @@ type ExcelExprTranslationTest(output: ITestOutputHelper) =
         Should.equal y <| Pow(Number "1",Number "2")
 
     [<Fact>]
-    member this.``percent test``() =
+    member _.``percent test``() =
         let x = """ 1 % """
         let y = ExcelExprDriver.parse x
 
@@ -173,7 +173,7 @@ type ExcelExprTranslationTest(output: ITestOutputHelper) =
         Should.equal y <| Percent(Number "1")
 
     [<Fact>]
-    member this.``posi test``() =
+    member _.``posi test``() =
         let x = """ + a """
         let y = ExcelExprDriver.parse x
 
@@ -181,7 +181,7 @@ type ExcelExprTranslationTest(output: ITestOutputHelper) =
         Should.equal y <| Positive(Reference([],["a"]))
 
     [<Fact>]
-    member this.``negative test``() =
+    member _.``negative test``() =
         let x = """ - a """
         let y = ExcelExprDriver.parse x
 
@@ -189,7 +189,7 @@ type ExcelExprTranslationTest(output: ITestOutputHelper) =
         Should.equal y <| Negative(Reference([],["a"]))
 
     [<Fact>]
-    member this.``arguments test``() =
+    member _.``arguments test``() =
         let x = """ sum(1,2) """
         let y = ExcelExprDriver.parse x
 
@@ -197,7 +197,7 @@ type ExcelExprTranslationTest(output: ITestOutputHelper) =
         Should.equal y <| Func("sum",[Number "1";Number "2"])
 
     [<Fact>]
-    member this.``prec test``() =
+    member _.``prec test``() =
         let x = """ 1 & 2 = 3 """
         let y = ExcelExprDriver.parse x
 

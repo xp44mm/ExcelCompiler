@@ -27,7 +27,7 @@ type ExcelParsingTableTest(output:ITestOutputHelper) =
 
 
     [<Fact>]
-    member this.``3 - print the template of type annotaitions``() =
+    member _.``3 - print the template of type annotaitions``() =
         
         let grammar = Grammar.from fsyacc.mainProductions
 
@@ -43,21 +43,21 @@ type ExcelParsingTableTest(output:ITestOutputHelper) =
         output.WriteLine(sourceCode)
 
     [<Fact>]
-    member this.``2-产生式冲突``() =
+    member _.``2-产生式冲突``() =
         let tbl = AmbiguousTable.create fsyacc.mainProductions
         let pconflicts = ConflictFactory.productionConflict tbl.ambiguousTable
         //show pconflicts
         Assert.True(pconflicts.IsEmpty)
 
     [<Fact>]
-    member this.``3-符号多用警告``() =
+    member _.``3-符号多用警告``() =
         let tbl = AmbiguousTable.create fsyacc.mainProductions
         let warning = ConflictFactory.overloadsWarning tbl
         //show warning
         Assert.True(warning.IsEmpty)
 
     [<Fact>]
-    member this.``4-优先级冲突``() =
+    member _.``4-优先级冲突``() =
         let tbl = AmbiguousTable.create fsyacc.mainProductions
         let srconflicts = ConflictFactory.shiftReduceConflict tbl
 
@@ -67,7 +67,7 @@ type ExcelParsingTableTest(output:ITestOutputHelper) =
 
 
     [<Fact(Skip="once and for all!")>] // 
-    member this.``5 - generate parsing table``() =
+    member _.``5 - generate parsing table``() =
         let name = "ExcelParsingTable"
         let moduleName = $"ExcelCompiler.{name}"
 
@@ -79,7 +79,7 @@ type ExcelParsingTableTest(output:ITestOutputHelper) =
         output.WriteLine("output path:"+outputDir)
 
     [<Fact>]
-    member this.``6 - valid ParseTable``() =
+    member _.``6 - valid ParseTable``() =
         let t = fsyacc.toFsyaccParseTable()
 
         Should.equal t.header        ExcelParsingTable.header

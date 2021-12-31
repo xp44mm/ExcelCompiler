@@ -22,7 +22,7 @@ type ExcelDfaTest(output:ITestOutputHelper) =
     let fslex = FslexFile.parse text
 
     [<Fact(Skip="once and for all!")>] // 
-    member this.``1 - generate DFA``() =
+    member _.``1 - generate DFA``() =
         let name = "ExcelDFA"
         let moduleName = $"ExcelCompiler.{name}"
 
@@ -34,12 +34,12 @@ type ExcelDfaTest(output:ITestOutputHelper) =
         output.WriteLine("output lex:" + outputDir)
 
     [<Fact>]
-    member this.``2 - valid DFA``() =
+    member _.``2 - valid DFA``() =
         let y = fslex.toFslexDFA()
 
-        Should.equal y.dfa.nextStates       ExcelDFA.nextStates
-        Should.equal y.dfa.lexemesFromFinal ExcelDFA.lexemesFromFinal
-        Should.equal y.dfa.universalFinals  ExcelDFA.universalFinals
-        Should.equal y.dfa.indicesFromFinal ExcelDFA.indicesFromFinal
-        Should.equal y.header               ExcelDFA.header
-        Should.equal y.semantics            ExcelDFA.semantics
+        Should.equal y.nextStates       ExcelDFA.nextStates
+        Should.equal y.lexemesFromFinal ExcelDFA.lexemesFromFinal
+        Should.equal y.universalFinals  ExcelDFA.universalFinals
+        Should.equal y.indicesFromFinal ExcelDFA.indicesFromFinal
+        Should.equal y.header           ExcelDFA.header
+        Should.equal y.semantics        ExcelDFA.semantics

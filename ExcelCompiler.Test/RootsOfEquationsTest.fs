@@ -12,14 +12,14 @@ type RootsOfEquationsTest(output: ITestOutputHelper) =
         |> output.WriteLine
 
     [<Fact>]
-    member this.``fixed point test``() =
+    member _.``fixed point test``() =
         let formula = "A2-A1"
         let expr = ExcelExprDriver.parse formula
         //show expr
         let y = Sub(Reference([],["A2"]),Reference([],["A1"]))
         Should.equal expr y
     [<Fact>]
-    member this.``bisect test``() =
+    member _.``bisect test``() =
         let formula = "(A1+A2)/2"
         let expr = ExcelExprDriver.parse formula
         //show expr
