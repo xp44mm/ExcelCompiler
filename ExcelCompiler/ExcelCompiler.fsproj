@@ -9,9 +9,9 @@
 		<PackageLicenseExpression>LGPL-3.0-or-later</PackageLicenseExpression>
 		<RepositoryUrl>https://github.com/xp44mm/ExcelCompiler</RepositoryUrl>
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-		<PackageReleaseNotes>update depend packages</PackageReleaseNotes>
+		<PackageReleaseNotes>update dfa &amp; table format</PackageReleaseNotes>
 		<PackageProjectUrl>https://github.com/xp44mm/ExcelCompiler</PackageProjectUrl>
-		<Version>1.1.4</Version>
+		<Version>1.1.5</Version>
 		<PackageReadmeFile>readme.md</PackageReadmeFile>
 		<PackageTags>excel; formula parser</PackageTags>
 	</PropertyGroup>
@@ -22,13 +22,13 @@
 		<Compile Include="ExcelExpr.fs" />
 		<Compile Include="NameParser.fs" />
 		<Compile Include="Validation.fs" />
+		<Compile Include="RenderFSharp.fs" />
+		<Compile Include="ExprRender.fs" />
 		<None Include="excel.fsyacc" />
 		<Compile Include="ExcelParsingTable.fs" />
 		<None Include="excel.fslex" />
 		<Compile Include="ExcelDFA.fs" />
 		<Compile Include="ExcelExprDriver.fs" />
-		<Compile Include="ExprRender.fs" />
-		<Compile Include="RenderFSharp.fs" />
 		<Compile Include="ExcelFormulaString.fs" />
 		<None Include="..\readme.md">
 		  <Pack>True</Pack>
@@ -38,8 +38,8 @@
 
 	<ItemGroup>
 		<PackageReference Include="FSharp.Idioms" Version="1.1.20" />
-		<PackageReference Include="FSharp.Literals" Version="2.2.7" />
-		<PackageReference Include="FslexFsyacc.Runtime" Version="1.2.0" />
+		<PackageReference Include="FSharp.Literals" Version="2.2.8" />
+		<PackageReference Include="FslexFsyacc.Runtime" Version="1.2.4" />
 	</ItemGroup>
 
 	<ItemGroup>

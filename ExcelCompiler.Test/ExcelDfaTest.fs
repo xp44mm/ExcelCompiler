@@ -26,7 +26,7 @@ type ExcelDfaTest(output:ITestOutputHelper) =
         let name = "ExcelDFA"
         let moduleName = $"ExcelCompiler.{name}"
 
-        let y = fslex.toFslexDFA()
+        let y = fslex.toFslexDFAFile()
         let result = y.generate(moduleName)
 
         let outputDir = Path.Combine(sourcePath, $"{name}.fs")
@@ -35,11 +35,7 @@ type ExcelDfaTest(output:ITestOutputHelper) =
 
     [<Fact>]
     member _.``2 - valid DFA``() =
-        let y = fslex.toFslexDFA()
-
-        Should.equal y.nextStates       ExcelDFA.nextStates
-        Should.equal y.lexemesFromFinal ExcelDFA.lexemesFromFinal
-        Should.equal y.universalFinals  ExcelDFA.universalFinals
-        Should.equal y.indicesFromFinal ExcelDFA.indicesFromFinal
-        Should.equal y.header           ExcelDFA.header
-        Should.equal y.semantics        ExcelDFA.semantics
+        let y = fslex.toFslexDFAFile()
+        Should.equal y.nextStates ExcelDFA.nextStates
+        Should.equal y.header     ExcelDFA.header
+        Should.equal y.rules      ExcelDFA.rules

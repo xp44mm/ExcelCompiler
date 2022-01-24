@@ -7,15 +7,15 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Compile Include="ExcelTokenTest.fs" />
-		<Compile Include="ExcelDfaTest.fs" />
-		<Compile Include="ExcelTokenNormalizerTest.fs" />
-		<Compile Include="ExcelParsingTableTest.fs" />
-		<Compile Include="ExcelExprTranslationTest.fs" />
 		<Compile Include="NameParserTest.fs" />
 		<Compile Include="ValidationTest.fs" />
-		<Compile Include="RootsOfEquationsTest.fs" />
 		<Compile Include="RenderFSharpTest.fs" />
+		<Compile Include="ExcelTokenTest.fs" />
+		<Compile Include="ExcelParsingTableTest.fs" />
+		<Compile Include="ExcelDfaTest.fs" />
+		<Compile Include="ExcelTokenNormalizerTest.fs" />
+		<Compile Include="ExcelExprTranslationTest.fs" />
+		<Compile Include="RootsOfEquationsTest.fs" />
 		<Compile Include="ExcelFormulaStringTest.fs" />
 
 		<Compile Include="Program.fs" />
@@ -23,9 +23,9 @@
 
 	<ItemGroup>
 		<PackageReference Include="FSharp.Idioms" Version="1.1.20" />
-		<PackageReference Include="FSharp.Literals" Version="2.2.7" />
+		<PackageReference Include="FSharp.Literals" Version="2.2.8" />
 		<PackageReference Include="FSharp.xUnit" Version="1.2.1" />
-		<PackageReference Include="FslexFsyacc" Version="1.2.0" />
+		<PackageReference Include="FslexFsyacc" Version="1.2.4" />
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
 		<PackageReference Include="xunit" Version="2.4.1" />
 		<PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
