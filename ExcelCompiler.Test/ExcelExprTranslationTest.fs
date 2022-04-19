@@ -188,13 +188,16 @@ type ExcelExprTranslationTest(output: ITestOutputHelper) =
         //show y
         Should.equal y <| Negative(Reference([],["a"]))
 
-    [<Fact>]
-    member _.``arguments test``() =
-        let x = """ sum(1,2) """
+    [<Theory>]
+    [<InlineData("()")>]
+    [<InlineData("(,)")>]
+    [<InlineData("(,1,2)")>]
+    member _.``arguments test``(x) =
+        let x = $"sum{x}"
         let y = ExcelExprDriver.parse x
 
-        //show y
-        Should.equal y <| Func("sum",[Number "1";Number "2"])
+        show y
+        //Should.equal y <| Func("sum",[Some(Number "1");Some(Number "2")])
 
     [<Fact>]
     member _.``prec test``() =

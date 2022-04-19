@@ -79,7 +79,7 @@ type ExcelParsingTableTest(output:ITestOutputHelper) =
         let sourceCode = 
             [
                 for i in symbols do
-                    i + " \"\";"
+                    i + " : \"\""
             ] |> String.concat "\r\n"
         output.WriteLine(sourceCode)
 

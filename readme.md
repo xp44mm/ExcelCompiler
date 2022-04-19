@@ -11,10 +11,10 @@ ExcelFormulaString.tokenize: string -> seq<ExcelToken>
 示例：
 
 ```F#
-    let x = "(A1+A2)/2"
-    let y = ExcelFormulaString.tokenize x |> List.ofSeq
-    let z = [LPAREN;ID "A1";ADD;ID "A2";RPAREN;DIV;INTEGER "2"]
-    Should.equal y z
+let x = "(A1+A2)/2"
+let y = ExcelFormulaString.tokenize x |> List.ofSeq
+let z = [LPAREN;ID "A1";ADD;ID "A2";RPAREN;DIV;INTEGER "2"]
+Should.equal y z
 ```
 
 公式字符串分解为词素。词素相对于原子词素进行了初步分组合并。
@@ -26,10 +26,10 @@ ExcelFormulaString.normToken: string -> seq<ExcelToken>
 示例：
 
 ```F#
-    let x = "sheet1!A2"
-    let y = ExcelFormulaString.normToken x |> List.ofSeq
-    let z = [REFERENCE(["sheet1"],["A2"])]
-    Should.equal y z
+let x = "sheet1!A2"
+let y = ExcelFormulaString.normToken x |> List.ofSeq
+let z = [REFERENCE(["sheet1"],["A2"])]
+Should.equal y z
 ```
 
 公式字符串解析为表达式。
@@ -41,10 +41,10 @@ ExcelFormulaString.parseToExpr: string -> ExcelExpr
 示例：
 
 ```F#
-    let x = "(A1+A2)/2"
-    let y = ExcelFormulaString.parseToExpr x
-    let z = Div(Add(Reference([],["A1"]),Reference([],["A2"])),Number "2")
-    Should.equal y z
+let x = "(A1+A2)/2"
+let y = ExcelFormulaString.parseToExpr x
+let z = Div(Add(Reference([],["A1"]),Reference([],["A2"])),Number "2")
+Should.equal y z
 ```
 
 将名称的名称属性分解为工作表名和名称。如果是工作簿名称，则工作表名称为空。
@@ -56,10 +56,10 @@ ExcelFormulaString.splitName: string -> string * string
 示例：
 
 ```F#
-    let x = "sheet1!x"
-    let y = ExcelFormulaString.splitName x
-    let z = "sheet1","x"
-    Should.equal y z
+let x = "sheet1!x"
+let y = ExcelFormulaString.splitName x
+let z = "sheet1","x"
+Should.equal y z
 ```
 
 找出解析器不支持的情况。
@@ -71,9 +71,9 @@ ExcelFormulaString.varifyMessage: tokens:ExcelToken list -> string
 示例：
 
 ```F#
-    let tokens = [LBRACKET;ID "工作簿1.xlsx";RBRACKET;ID "Sheet1";EXCLAM;DOLLAR "$A$1"]
-    let y = ExcelFormulaString.varifyMessage tokens
-    Should.equal y "中括号"
+let tokens = [LBRACKET;ID "工作簿1.xlsx";RBRACKET;ID "Sheet1";EXCLAM;DOLLAR "$A$1"]
+let y = ExcelFormulaString.varifyMessage tokens
+Should.equal y "中括号"
 ```
 
 将Excel公式打印成F#表达式。
@@ -85,9 +85,9 @@ ExcelFormulaString.fsharpExpr: expr:ExcelExpr -> string
 示例：
 
 ```F#
-    let expr = Mul(Func("pi",[]),Number "3")
-    let y = ExcelFormulaString.fsharpString expr
-    Should.equal y "Math.PI*3.0"
+let expr = Mul(Func("pi",[]),Number "3")
+let y = ExcelFormulaString.fsharpString expr
+Should.equal y "Math.PI*3.0"
 ```
 
 词素：

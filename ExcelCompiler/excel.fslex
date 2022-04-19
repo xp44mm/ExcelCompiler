@@ -17,9 +17,6 @@ others = [NUMBER QUOTE ERROR FALSE TRUE "," "(" ")" "=" "<>" "<" "<=" ">" ">=" "
 <unary> / INTEGER ":"	   { lexbuf}
 <unary> [ INTEGER NUMBER ] { signNumber lexbuf}
 ID / "("				   { [functionFromId lexbuf.Head]}
-"(" / ","				   { appendNA lexbuf}
-"," / ","				   { appendNA lexbuf}
-"," / ")"				   { appendNA lexbuf}
 <wsrange>				   { [REFERENCE(getRange lexbuf)]}
 INTEGER					   { [numberFromInteger lexbuf.Head]}
 <others>				   { lexbuf}

@@ -14,7 +14,7 @@ let getPrecOffset sym =
     | 9 -> prec+1,-1
     | 0 -> prec,0
     | 1 -> prec-1,1
-    | never -> failwith ""
+    | never -> failwithf "%A" sym
 
 //打印标准型，解析的逆
 let norm (expr) =
@@ -48,13 +48,18 @@ let norm (expr) =
         | Quote s -> s
         | Func (f,args) ->
             if f == "sqrt" then
-                Pow(args.[0],Number "0.5")
+                match args.[0] with
+                | Some e -> 
+                    Pow(e,Number "0.5")
+                | None -> failwithf "%A" expr
                 |> loop precedence
             elif f == "pi" then
                 "Math.PI"
             else
                 args 
-                |> List.map (loop 0)
+                |> List.map (function
+                    | None -> "_"
+                    | Some e -> loop 0 e)
                 |> String.concat ","
                 |> sprintf "%s(%s)" (f.ToLower())
                 //优先级高，一定不加括号

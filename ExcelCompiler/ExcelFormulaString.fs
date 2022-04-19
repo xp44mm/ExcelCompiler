@@ -1,11 +1,11 @@
 ﻿module ExcelCompiler.ExcelFormulaString
 
 /// 
-let tokenize(formula:string) = ExcelToken.tokenize formula
+let tokenize(formula:string) = ExcelTokenUtils.tokenize formula
 
 let normToken(formula:string) = 
     formula 
-    |> ExcelToken.tokenize  
+    |> ExcelTokenUtils.tokenize  
     |> ExcelDFA.analyze
     |> Seq.concat
 

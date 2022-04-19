@@ -1,7 +1,7 @@
 ﻿namespace ExcelCompiler
 
 type ExcelExpr =
-    | Func     of string * ExcelExpr list
+    | Func     of string * ExcelExpr option list
     | Reference of string list * string list
     | Number   of string
     | False | True
@@ -21,3 +21,4 @@ type ExcelExpr =
     | Percent  of ExcelExpr
     | Positive of ExcelExpr
     | Negative of ExcelExpr
+

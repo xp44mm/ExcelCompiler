@@ -1,5 +1,6 @@
 ﻿module ExcelCompiler.ExcelTokenUtils
 open FSharp.Idioms
+open System.Text.RegularExpressions
 
 let getTag = function
     | NUMBER                _ -> "NUMBER"
@@ -58,135 +59,135 @@ let tokenize(inp:string) =
             match inp with
             | "" -> ()
 
-            | Prefix @"\s+" (_,rest) ->
+            | On(tryMatch(Regex @"^\s+")) (_,rest) ->
                 yield! loop isUnary rest
 
-            | Prefix @"(?i)false\b" (_,rest) ->
+            | On(tryMatch(Regex(@"^false\b",RegexOptions.IgnoreCase))) (_,rest) ->
                 yield FALSE
                 yield! loop isUnary rest
 
-            | Prefix @"(?i)true\b" (_,rest) ->
+            | On(tryMatch(Regex(@"^true\b",RegexOptions.IgnoreCase))) (_,rest) ->
                 yield TRUE
                 yield! loop isUnary rest
 
-            | PrefixChar '!' rest ->
+            | On(tryFirst '!') rest ->
                 yield EXCLAM
                 yield! loop false rest
 
-            | PrefixChar ':' rest ->
+            | On(tryFirst ':') rest ->
                 yield COLON
                 yield! loop false rest
 
-            | PrefixChar ',' rest ->
+            | On(tryFirst ',') rest ->
                 yield COMMA
                 yield! loop true rest
 
-            | PrefixChar '(' rest ->
+            | On(tryFirst '(') rest ->
                 yield LPAREN
                 yield! loop true rest
 
-            | PrefixChar ')' rest ->
+            | On(tryFirst ')') rest ->
                 yield RPAREN
                 yield! loop false rest
 
-            | PrefixChar '=' rest ->
+            | On(tryFirst '=') rest ->
                 yield EQ
                 yield! loop true rest
 
-            | PrefixChar '>' rest ->
+            | On(tryFirst '>') rest ->
                 match rest with
-                | PrefixChar '=' rest ->
+                | On(tryFirst '=') rest ->
                     yield GE
                     yield! loop true rest
                 | _ ->
                     yield GT
                     yield! loop true rest
 
-            | PrefixChar '<' rest ->
+            | On(tryFirst '<') rest ->
                 match rest with
-                | PrefixChar '=' rest ->
+                | On(tryFirst '=') rest ->
                     yield LE
                     yield! loop true rest
-                | PrefixChar '>' rest ->
+                | On(tryFirst '>') rest ->
                     yield NE
                     yield! loop true rest
                 | _ ->
                     yield LT
                     yield! loop true rest
 
-            | PrefixChar '&' rest ->
+            | On(tryFirst '&') rest ->
                 yield AMPERSAND
                 yield! loop true rest
 
-            | PrefixChar '+' rest ->
+            | On(tryFirst '+') rest ->
                 yield if isUnary then POSITIVE else ADD
                 yield! loop true rest
 
-            | PrefixChar '-' rest ->
+            | On(tryFirst '-') rest ->
                 yield if isUnary then NEGATIVE else SUB
                 yield! loop true rest
 
-            | PrefixChar '*' rest ->
+            | On(tryFirst '*') rest ->
                 yield MUL
                 yield! loop true rest
 
-            | PrefixChar '/' rest ->
+            | On(tryFirst '/') rest ->
                 yield DIV
                 yield! loop true rest
 
-            | PrefixChar '^' rest ->
+            | On(tryFirst '^') rest ->
                 yield CARET
                 yield! loop true rest
 
-            | PrefixChar '%' rest ->
+            | On(tryFirst '%') rest ->
                 yield PERCENT
                 yield! loop false rest
 
-            | PrefixChar '{' rest ->
+            | On(tryFirst '{') rest ->
                 yield LBRACE
                 yield! loop false rest
 
-            | PrefixChar '}' rest ->
+            | On(tryFirst '}') rest ->
                 yield RBRACE
                 yield! loop false rest
 
-            | PrefixChar '[' rest ->
+            | On(tryFirst '[') rest ->
                 yield LBRACKET
                 yield! loop false rest
 
-            | PrefixChar ']' rest ->
+            | On(tryFirst ']') rest ->
                 yield RBRACKET
                 yield! loop false rest
 
-            | Prefix """(?:"([^"]|"")*"(?!"))""" (lexeme,rest) ->
+            | On(tryMatch(Regex """^"([^"]|"")*"(?!")""")) (lexeme,rest) ->
                 yield QUOTE lexeme
                 yield! loop false rest
 
-            | Prefix "'([^']|'')*'(?!')" (lexeme,rest) ->
+            | On(tryMatch(Regex "^'([^']|'')*'(?!')")) (lexeme,rest) ->
                 yield APOSTROPHE lexeme
                 yield! loop false rest
 
-            | Prefix @"#DIV/0!|#N/A\b|#NAME\?|#NULL!|#NUM!|#REF!|#VALUE!" (lexeme,rest) ->
+            | On(tryMatch(Regex(@"^#DIV/0!|#N/A\b|#NAME\?|#NULL!|#NUM!|#REF!|#VALUE!",RegexOptions.IgnoreCase))) (lexeme,rest) ->
                 yield ERROR lexeme
                 yield! loop false rest
 
             //至少有一個$的標識符
-            | Prefix @"(?i)[0-9A-Z$]*\$[0-9A-Z]+" (lexeme,rest) ->
+            | On(tryMatch(Regex(@"^[0-9A-Z$]*\$[0-9A-Z]+",RegexOptions.IgnoreCase))) (lexeme,rest) ->
                 yield DOLLAR lexeme
                 yield! loop false rest
 
             //整数
-            | Prefix @"\d+\b(?![.])" (lexeme,rest) ->
+            | On(tryMatch(Regex @"^\d+\b(?![.])")) (lexeme,rest) ->
                 yield INTEGER lexeme
                 yield! loop false rest
 
             //小數
-            | Prefix @"\d+(\.\d+)?([eE][-+]?\d+)?" (lexeme,rest) ->
+            | On(tryMatch(Regex @"^\d+(\.\d+)?([eE][-+]?\d+)?")) (lexeme,rest) ->
                 yield NUMBER lexeme
                 yield! loop false rest
 
             //https://support.office.com/en-us/article/names-in-formulas-fc2935f9-115d-4bef-a370-3aa8bb4c91f1?omkt=en-US&ui=en-US&rs=en-US&ad=US
-            | Prefix @"[\w\\.]+" (lexeme,rest) ->
+            | On(tryMatch(Regex @"^[\w\\.]+")) (lexeme,rest) ->
                 yield ID lexeme
                 yield! loop false rest
 
@@ -210,9 +211,9 @@ let numberFromInteger = function
     | INTEGER x -> NUMBER x
     | tok -> failwithf "%A" tok
 
-let appendNA = function
-    | [tok] -> [tok;FUNCTION "NA";LPAREN;RPAREN]
-    | lexbuf -> failwithf "%A" lexbuf
+//let appendNA = function
+//    | [tok] -> [tok;FUNCTION "NA";LPAREN;RPAREN]
+//    | lexbuf -> failwithf "%A" lexbuf
 
 let getRange lexbuf = 
     match lexbuf with

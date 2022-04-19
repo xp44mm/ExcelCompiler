@@ -45,7 +45,7 @@ type ExcelTokenNormalizerTest(output: ITestOutputHelper) =
     member _.``345 test``() =
         let x = " (,,) "
         let y = norm x
-        Should.equal y [LPAREN;FUNCTION "NA";LPAREN;RPAREN;COMMA;FUNCTION "NA";LPAREN;RPAREN;COMMA;FUNCTION "NA";LPAREN;RPAREN;RPAREN]
+        Should.equal y [LPAREN;COMMA;COMMA;RPAREN]
 
     [<Fact>]
     member _.``6 test``() =

@@ -3,7 +3,7 @@
 ///解析公式
 let parse(formula:string) =
     formula
-    |> ExcelToken.tokenize
+    |> ExcelTokenUtils.tokenize
     |> ExcelDFA.analyze
     |> Seq.concat
     |> ExcelParsingTable.parse

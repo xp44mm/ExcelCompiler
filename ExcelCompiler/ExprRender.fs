@@ -41,7 +41,9 @@ let norm (expr) =
         | Quote s -> s
         | Func (f,args) ->
             args 
-            |> List.map (loop 0)
+            |> List.map (function
+                | None -> ""
+                | Some expr -> loop 0 expr)
             |> String.concat ","
             |> sprintf "%s(%s)" f
             //优先级高，一定不加括号
