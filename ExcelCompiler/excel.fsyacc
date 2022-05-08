@@ -1,57 +1,54 @@
 ﻿%{
 open ExcelCompiler.ExcelTokenUtils
 open ExcelCompiler.ExcelExprUtils
+type token = ExcelToken
+
 %}
-
-expr    : FUNCTION "(" arguments ")" {Func(s0, s2)}
-        | REFERENCE                  {Reference s0}
-        | NUMBER                     {Number s0}
-        | QUOTE                      {Quote s0}
-        | FALSE                      {False}
-        | TRUE                       {True}
-        | "(" expr ")"               {s1}
-        | expr "="  expr             {Eq(s0,s2)}
-        | expr "<"  expr             {Lt(s0,s2)}
-        | expr "<=" expr             {Le(s0,s2)}
-        | expr ">"  expr             {Gt(s0,s2)}
-        | expr ">=" expr             {Ge(s0,s2)}
-        | expr "<>" expr             {Ne(s0,s2)}
-        | expr "&" expr              {Concat(s0,s2)}
-        | expr "+" expr              {Add(s0,s2)}
-        | expr "-" expr              {Sub(s0,s2)}
-        | expr "*" expr              {Mul(s0,s2)}
-        | expr "/" expr              {Div(s0,s2)}
-        | expr "^" expr              {Pow(s0,s2)}
-        | expr "%"                   {Percent s0}
-        | POSITIVE expr              {Positive s1}
-        | NEGATIVE expr              {Negative s1}
-
-arguments : 
-    | (* empty *)   {[]}
-                    
-    | expr          {[Some s0]}
-    | argumentList  {
+expr :
+    | FUNCTION "(" arguments ")" { Func(s0, s2) }
+    | REFERENCE { Reference s0 }
+    | NUMBER { Number s0 }
+    | QUOTE { Quote s0 }
+    | FALSE { False }
+    | TRUE { True }
+    | "(" expr ")" { s1 }
+    | expr "=" expr { Eq(s0,s2) }
+    | expr "<" expr { Lt(s0,s2) }
+    | expr "<=" expr { Le(s0,s2) }
+    | expr ">" expr { Gt(s0,s2) }
+    | expr ">=" expr { Ge(s0,s2) }
+    | expr "<>" expr { Ne(s0,s2) }
+    | expr "&" expr { Concat(s0,s2) }
+    | expr "+" expr { Add(s0,s2) }
+    | expr "-" expr { Sub(s0,s2) }
+    | expr "*" expr { Mul(s0,s2) }
+    | expr "/" expr { Div(s0,s2) }
+    | expr "^" expr { Pow(s0,s2) }
+    | expr "%" { Percent s0 }
+    | POSITIVE expr { Positive s1 }
+    | NEGATIVE expr { Negative s1 }
+arguments :
+    | (*empty*) { [] }
+    | expr { [Some s0] }
+    | argumentList {
         [
             yield! fromArgumentList s0
             yield None
         ]
     }
-    | commas        { fromCommas (s0+1) }
-
+    | commas { fromCommas (s0+1) }
     | commas expr {
         [
             yield! fromCommas s0
             yield Some s1
         ]
     }
-
     | argumentList expr {
         [
             yield! fromArgumentList s0
             yield Some s1
         ]
     }
-
     | commas argumentList {
         [
             yield! fromCommas s0
@@ -59,7 +56,6 @@ arguments :
             yield None
         ]
     }
-
     | commas argumentList expr {
         [
             yield! fromCommas s0
@@ -67,21 +63,15 @@ arguments :
             yield Some s2
         ]
     }
-
-commas:
-    | ","         {1}
-    | commas ","  { s0 + 1 }
-
-argumentList:
-    |              argument {[s0]}
-    | argumentList argument {s1::s0}
-
-argument:
-    | expr commas {s0,s1}
-
-
+argumentList :
+    | argument { [s0] }
+    | argumentList argument { s1::s0 }
+argument :
+    | expr commas { s0,s1 }
+commas :
+    | "," { 1 }
+    | commas "," { s0 + 1 }
 %%
-
 %nonassoc "<" "<=" "<>" "=" ">" ">="
 %left "&"
 %left "+" "-"
@@ -89,16 +79,13 @@ argument:
 %left "^"
 %left "%"
 %right POSITIVE NEGATIVE
-
 %%
-
-FUNCTION  : "string"
-NUMBER    : "string"
-QUOTE     : "string"
+FUNCTION : string
+NUMBER : string
+QUOTE : string
 REFERENCE : "string list*string list"
-    
-expr      : "ExcelExpr"
+expr : ExcelExpr
 arguments : "ExcelExpr option list"
 argumentList : "list<ExcelExpr*int>"
 argument : "ExcelExpr*int"
-commas : "int"
+commas : int

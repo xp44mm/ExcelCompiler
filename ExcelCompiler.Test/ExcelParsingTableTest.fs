@@ -32,7 +32,7 @@ type ExcelParsingTableTest(output:ITestOutputHelper) =
         let conflicts =
             collection.filterConflictedClosures()
         show conflicts
-
+        
         //Should.equal y conflicts
 
     [<Fact>]
@@ -83,7 +83,7 @@ type ExcelParsingTableTest(output:ITestOutputHelper) =
             ] |> String.concat "\r\n"
         output.WriteLine(sourceCode)
 
-    [<Fact(Skip="once and for all!")>] // 
+    [<Fact>] // (Skip="once and for all!")
     member _.``5 - generate parsing table``() =
         let name = "ExcelParsingTable"
         let moduleName = $"ExcelCompiler.{name}"
@@ -106,3 +106,7 @@ type ExcelParsingTableTest(output:ITestOutputHelper) =
         Should.equal t.closures ExcelParsingTable.closures
         Should.equal t.declarations  ExcelParsingTable.declarations
 
+    [<Fact>]
+    member _.``7 - reorganize``() =
+        let fsyacc = rawFsyacc.start("expr",Set.empty)
+        output.WriteLine(fsyacc.render())

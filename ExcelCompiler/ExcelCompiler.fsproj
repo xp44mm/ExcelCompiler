@@ -9,9 +9,9 @@
 		<PackageLicenseExpression>LGPL-3.0-or-later</PackageLicenseExpression>
 		<RepositoryUrl>https://github.com/xp44mm/ExcelCompiler</RepositoryUrl>
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-		<PackageReleaseNotes>update dfa &amp; table format</PackageReleaseNotes>
+		<PackageReleaseNotes>refac</PackageReleaseNotes>
 		<PackageProjectUrl>https://github.com/xp44mm/ExcelCompiler</PackageProjectUrl>
-		<Version>1.1.5</Version>
+		<Version>1.1.7</Version>
 		<PackageReadmeFile>readme.md</PackageReadmeFile>
 		<PackageTags>excel; formula parser</PackageTags>
 	</PropertyGroup>
@@ -38,9 +38,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="FSharp.Idioms" Version="1.2.2" />
+		<PackageReference Include="FSharp.Idioms" Version="1.2.5" />
 		<PackageReference Include="FSharp.Literals" Version="2.2.9" />
-		<PackageReference Include="FslexFsyacc.Runtime" Version="1.2.7" />
+		<PackageReference Include="FslexFsyacc.Runtime" Version="1.2.9" />
 	</ItemGroup>
 
 	<ItemGroup>
