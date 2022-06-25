@@ -1,224 +1,221 @@
 module ExcelCompiler.ExcelParsingTable
-let rules = [|["expr";"FUNCTION";"(";"arguments";")"],"Func(s0, s2)";["expr";"REFERENCE"],"Reference s0";["expr";"NUMBER"],"Number s0";["expr";"QUOTE"],"Quote s0";["expr";"FALSE"],"False";["expr";"TRUE"],"True";["expr";"(";"expr";")"],"s1";["expr";"expr";"=";"expr"],"Eq(s0,s2)";["expr";"expr";"<";"expr"],"Lt(s0,s2)";["expr";"expr";"<=";"expr"],"Le(s0,s2)";["expr";"expr";">";"expr"],"Gt(s0,s2)";["expr";"expr";">=";"expr"],"Ge(s0,s2)";["expr";"expr";"<>";"expr"],"Ne(s0,s2)";["expr";"expr";"&";"expr"],"Concat(s0,s2)";["expr";"expr";"+";"expr"],"Add(s0,s2)";["expr";"expr";"-";"expr"],"Sub(s0,s2)";["expr";"expr";"*";"expr"],"Mul(s0,s2)";["expr";"expr";"/";"expr"],"Div(s0,s2)";["expr";"expr";"^";"expr"],"Pow(s0,s2)";["expr";"expr";"%"],"Percent s0";["expr";"POSITIVE";"expr"],"Positive s1";["expr";"NEGATIVE";"expr"],"Negative s1";["arguments"],"[]";["arguments";"expr"],"[Some s0]";["arguments";"argumentList"],"[\r\n    yield! fromArgumentList s0\r\n    yield None\r\n]";["arguments";"commas"],"fromCommas (s0+1)";["arguments";"commas";"expr"],"[\r\n    yield! fromCommas s0\r\n    yield Some s1\r\n]";["arguments";"argumentList";"expr"],"[\r\n    yield! fromArgumentList s0\r\n    yield Some s1\r\n]";["arguments";"commas";"argumentList"],"[\r\n    yield! fromCommas s0\r\n    yield! fromArgumentList s1\r\n    yield None\r\n]";["arguments";"commas";"argumentList";"expr"],"[\r\n    yield! fromCommas s0\r\n    yield! fromArgumentList s1\r\n    yield Some s2\r\n]";["argumentList";"argument"],"[s0]";["argumentList";"argumentList";"argument"],"s1::s0";["argument";"expr";"commas"],"s0,s1";["commas";","],"1";["commas";"commas";","],"s0 + 1"|]
 let actions = [|[|"(",14;"FALSE",17;"FUNCTION",18;"NEGATIVE",22;"NUMBER",24;"POSITIVE",25;"QUOTE",27;"REFERENCE",28;"TRUE",29;"expr",1|];[|"",0;"%",42;"&",43;"*",44;"+",45;"-",46;"/",47;"<",48;"<=",49;"<>",50;"=",51;">",52;">=",53;"^",54|];[|"%",42;"&",43;")",-6;"*",44;"+",45;",",12;"-",46;"/",47;"<",48;"<=",49;"<>",50;"=",51;">",52;">=",53;"^",54;"commas",6|];[|"%",42;"&",43;")",-9;"*",44;"+",45;",",12;"-",46;"/",47;"<",48;"<=",49;"<>",50;"=",51;">",52;">=",53;"^",54;"commas",6|];[|"%",42;"&",43;")",-10;"*",44;"+",45;",",12;"-",46;"/",47;"<",48;"<=",49;"<>",50;"=",51;">",52;">=",53;"^",54;"commas",6|];[|"%",42;"&",43;")",-11;"*",44;"+",45;",",12;"-",46;"/",47;"<",48;"<=",49;"<>",50;"=",51;">",52;">=",53;"^",54;"commas",6|];[|"(",-1;")",-1;",",13;"FALSE",-1;"FUNCTION",-1;"NEGATIVE",-1;"NUMBER",-1;"POSITIVE",-1;"QUOTE",-1;"REFERENCE",-1;"TRUE",-1|];[|"(",-2;")",-2;"FALSE",-2;"FUNCTION",-2;"NEGATIVE",-2;"NUMBER",-2;"POSITIVE",-2;"QUOTE",-2;"REFERENCE",-2;"TRUE",-2|];[|"(",14;")",-5;"FALSE",17;"FUNCTION",18;"NEGATIVE",22;"NUMBER",24;"POSITIVE",25;"QUOTE",27;"REFERENCE",28;"TRUE",29;"argument",10;"expr",2|];[|"(",14;")",-8;"FALSE",17;"FUNCTION",18;"NEGATIVE",22;"NUMBER",24;"POSITIVE",25;"QUOTE",27;"REFERENCE",28;"TRUE",29;"argument",10;"expr",3|];[|"(",-3;")",-3;"FALSE",-3;"FUNCTION",-3;"NEGATIVE",-3;"NUMBER",-3;"POSITIVE",-3;"QUOTE",-3;"REFERENCE",-3;"TRUE",-3|];[|"(",14;")",-7;",",13;"FALSE",17;"FUNCTION",18;"NEGATIVE",22;"NUMBER",24;"POSITIVE",25;"QUOTE",27;"REFERENCE",28;"TRUE",29;"argument",7;"argumentList",9;"expr",4|];[|"(",-12;")",-12;",",-12;"FALSE",-12;"FUNCTION",-12;"NEGATIVE",-12;"NUMBER",-12;"POSITIVE",-12;"QUOTE",-12;"REFERENCE",-12;"TRUE",-12|];[|"(",-13;")",-13;",",-13;"FALSE",-13;"FUNCTION",-13;"NEGATIVE",-13;"NUMBER",-13;"POSITIVE",-13;"QUOTE",-13;"REFERENCE",-13;"TRUE",-13|];[|"(",14;"FALSE",17;"FUNCTION",18;"NEGATIVE",22;"NUMBER",24;"POSITIVE",25;"QUOTE",27;"REFERENCE",28;"TRUE",29;"expr",15|];[|"%",42;"&",43;")",16;"*",44;"+",45;"-",46;"/",47;"<",48;"<=",49;"<>",50;"=",51;">",52;">=",53;"^",54|];[|"",-14;"%",-14;"&",-14;")",-14;"*",-14;"+",-14;",",-14;"-",-14;"/",-14;"<",-14;"<=",-14;"<>",-14;"=",-14;">",-14;">=",-14;"^",-14|];[|"",-15;"%",-15;"&",-15;")",-15;"*",-15;"+",-15;",",-15;"-",-15;"/",-15;"<",-15;"<=",-15;"<>",-15;"=",-15;">",-15;">=",-15;"^",-15|];[|"(",19|];[|"(",14;")",-4;",",12;"FALSE",17;"FUNCTION",18;"NEGATIVE",22;"NUMBER",24;"POSITIVE",25;"QUOTE",27;"REFERENCE",28;"TRUE",29;"argument",7;"argumentList",8;"arguments",20;"commas",11;"expr",5|];[|")",21|];[|"",-16;"%",-16;"&",-16;")",-16;"*",-16;"+",-16;",",-16;"-",-16;"/",-16;"<",-16;"<=",-16;"<>",-16;"=",-16;">",-16;">=",-16;"^",-16|];[|"(",14;"FALSE",17;"FUNCTION",18;"NEGATIVE",22;"NUMBER",24;"POSITIVE",25;"QUOTE",27;"REFERENCE",28;"TRUE",29;"expr",23|];[|"",-17;"%",-17;"&",-17;")",-17;"*",-17;"+",-17;",",-17;"-",-17;"/",-17;"<",-17;"<=",-17;"<>",-17;"=",-17;">",-17;">=",-17;"^",-17|];[|"",-18;"%",-18;"&",-18;")",-18;"*",-18;"+",-18;",",-18;"-",-18;"/",-18;"<",-18;"<=",-18;"<>",-18;"=",-18;">",-18;">=",-18;"^",-18|];[|"(",14;"FALSE",17;"FUNCTION",18;"NEGATIVE",22;"NUMBER",24;"POSITIVE",25;"QUOTE",27;"REFERENCE",28;"TRUE",29;"expr",26|];[|"",-19;"%",-19;"&",-19;")",-19;"*",-19;"+",-19;",",-19;"-",-19;"/",-19;"<",-19;"<=",-19;"<>",-19;"=",-19;">",-19;">=",-19;"^",-19|];[|"",-20;"%",-20;"&",-20;")",-20;"*",-20;"+",-20;",",-20;"-",-20;"/",-20;"<",-20;"<=",-20;"<>",-20;"=",-20;">",-20;">=",-20;"^",-20|];[|"",-21;"%",-21;"&",-21;")",-21;"*",-21;"+",-21;",",-21;"-",-21;"/",-21;"<",-21;"<=",-21;"<>",-21;"=",-21;">",-21;">=",-21;"^",-21|];[|"",-22;"%",-22;"&",-22;")",-22;"*",-22;"+",-22;",",-22;"-",-22;"/",-22;"<",-22;"<=",-22;"<>",-22;"=",-22;">",-22;">=",-22;"^",-22|];[|"",-24;"%",42;"&",-24;")",-24;"*",44;"+",45;",",-24;"-",46;"/",47;"<",-24;"<=",-24;"<>",-24;"=",-24;">",-24;">=",-24;"^",54|];[|"",-25;"%",42;"&",-25;")",-25;"*",-25;"+",-25;",",-25;"-",-25;"/",-25;"<",-25;"<=",-25;"<>",-25;"=",-25;">",-25;">=",-25;"^",54|];[|"",-26;"%",42;"&",-26;")",-26;"*",44;"+",-26;",",-26;"-",-26;"/",47;"<",-26;"<=",-26;"<>",-26;"=",-26;">",-26;">=",-26;"^",54|];[|"",-27;"%",42;"&",-27;")",-27;"*",44;"+",-27;",",-27;"-",-27;"/",47;"<",-27;"<=",-27;"<>",-27;"=",-27;">",-27;">=",-27;"^",54|];[|"",-28;"%",42;"&",-28;")",-28;"*",-28;"+",-28;",",-28;"-",-28;"/",-28;"<",-28;"<=",-28;"<>",-28;"=",-28;">",-28;">=",-28;"^",54|];[|"",-29;"%",42;"&",43;")",-29;"*",44;"+",45;",",-29;"-",46;"/",47;"^",54|];[|"",-30;"%",42;"&",43;")",-30;"*",44;"+",45;",",-30;"-",46;"/",47;"^",54|];[|"",-31;"%",42;"&",43;")",-31;"*",44;"+",45;",",-31;"-",46;"/",47;"^",54|];[|"",-32;"%",42;"&",43;")",-32;"*",44;"+",45;",",-32;"-",46;"/",47;"^",54|];[|"",-33;"%",42;"&",43;")",-33;"*",44;"+",45;",",-33;"-",46;"/",47;"^",54|];[|"",-34;"%",42;"&",43;")",-34;"*",44;"+",45;",",-34;"-",46;"/",47;"^",54|];[|"",-35;"%",42;"&",-35;")",-35;"*",-35;"+",-35;",",-35;"-",-35;"/",-35;"<",-35;"<=",-35;"<>",-35;"=",-35;">",-35;">=",-35;"^",-35|];[|"",-23;"%",-23;"&",-23;")",-23;"*",-23;"+",-23;",",-23;"-",-23;"/",-23;"<",-23;"<=",-23;"<>",-23;"=",-23;">",-23;">=",-23;"^",-23|];[|"(",14;"FALSE",17;"FUNCTION",18;"NEGATIVE",22;"NUMBER",24;"POSITIVE",25;"QUOTE",27;"REFERENCE",28;"TRUE",29;"expr",30|];[|"(",14;"FALSE",17;"FUNCTION",18;"NEGATIVE",22;"NUMBER",24;"POSITIVE",25;"QUOTE",27;"REFERENCE",28;"TRUE",29;"expr",31|];[|"(",14;"FALSE",17;"FUNCTION",18;"NEGATIVE",22;"NUMBER",24;"POSITIVE",25;"QUOTE",27;"REFERENCE",28;"TRUE",29;"expr",32|];[|"(",14;"FALSE",17;"FUNCTION",18;"NEGATIVE",22;"NUMBER",24;"POSITIVE",25;"QUOTE",27;"REFERENCE",28;"TRUE",29;"expr",33|];[|"(",14;"FALSE",17;"FUNCTION",18;"NEGATIVE",22;"NUMBER",24;"POSITIVE",25;"QUOTE",27;"REFERENCE",28;"TRUE",29;"expr",34|];[|"(",14;"FALSE",17;"FUNCTION",18;"NEGATIVE",22;"NUMBER",24;"POSITIVE",25;"QUOTE",27;"REFERENCE",28;"TRUE",29;"expr",35|];[|"(",14;"FALSE",17;"FUNCTION",18;"NEGATIVE",22;"NUMBER",24;"POSITIVE",25;"QUOTE",27;"REFERENCE",28;"TRUE",29;"expr",36|];[|"(",14;"FALSE",17;"FUNCTION",18;"NEGATIVE",22;"NUMBER",24;"POSITIVE",25;"QUOTE",27;"REFERENCE",28;"TRUE",29;"expr",37|];[|"(",14;"FALSE",17;"FUNCTION",18;"NEGATIVE",22;"NUMBER",24;"POSITIVE",25;"QUOTE",27;"REFERENCE",28;"TRUE",29;"expr",38|];[|"(",14;"FALSE",17;"FUNCTION",18;"NEGATIVE",22;"NUMBER",24;"POSITIVE",25;"QUOTE",27;"REFERENCE",28;"TRUE",29;"expr",39|];[|"(",14;"FALSE",17;"FUNCTION",18;"NEGATIVE",22;"NUMBER",24;"POSITIVE",25;"QUOTE",27;"REFERENCE",28;"TRUE",29;"expr",40|];[|"(",14;"FALSE",17;"FUNCTION",18;"NEGATIVE",22;"NUMBER",24;"POSITIVE",25;"QUOTE",27;"REFERENCE",28;"TRUE",29;"expr",41|]|]
 let closures = [|[|0,0,[||];-14,0,[||];-15,0,[||];-16,0,[||];-17,0,[||];-18,0,[||];-19,0,[||];-20,0,[||];-21,0,[||];-22,0,[||];-23,0,[||];-24,0,[||];-25,0,[||];-26,0,[||];-27,0,[||];-28,0,[||];-29,0,[||];-30,0,[||];-31,0,[||];-32,0,[||];-33,0,[||];-34,0,[||];-35,0,[||]|];[|0,1,[|""|];-23,1,[||];-24,1,[||];-25,1,[||];-26,1,[||];-27,1,[||];-28,1,[||];-29,1,[||];-30,1,[||];-31,1,[||];-32,1,[||];-33,1,[||];-34,1,[||];-35,1,[||]|];[|-1,1,[||];-6,2,[|")"|];-12,0,[||];-13,0,[||];-23,1,[||];-24,1,[||];-25,1,[||];-26,1,[||];-27,1,[||];-28,1,[||];-29,1,[||];-30,1,[||];-31,1,[||];-32,1,[||];-33,1,[||];-34,1,[||];-35,1,[||]|];[|-1,1,[||];-9,3,[|")"|];-12,0,[||];-13,0,[||];-23,1,[||];-24,1,[||];-25,1,[||];-26,1,[||];-27,1,[||];-28,1,[||];-29,1,[||];-30,1,[||];-31,1,[||];-32,1,[||];-33,1,[||];-34,1,[||];-35,1,[||]|];[|-1,1,[||];-10,2,[|")"|];-12,0,[||];-13,0,[||];-23,1,[||];-24,1,[||];-25,1,[||];-26,1,[||];-27,1,[||];-28,1,[||];-29,1,[||];-30,1,[||];-31,1,[||];-32,1,[||];-33,1,[||];-34,1,[||];-35,1,[||]|];[|-1,1,[||];-11,1,[|")"|];-12,0,[||];-13,0,[||];-23,1,[||];-24,1,[||];-25,1,[||];-26,1,[||];-27,1,[||];-28,1,[||];-29,1,[||];-30,1,[||];-31,1,[||];-32,1,[||];-33,1,[||];-34,1,[||];-35,1,[||]|];[|-1,2,[|"(";")";"FALSE";"FUNCTION";"NEGATIVE";"NUMBER";"POSITIVE";"QUOTE";"REFERENCE";"TRUE"|];-13,1,[||]|];[|-2,1,[|"(";")";"FALSE";"FUNCTION";"NEGATIVE";"NUMBER";"POSITIVE";"QUOTE";"REFERENCE";"TRUE"|]|];[|-1,0,[||];-3,1,[||];-5,1,[|")"|];-6,1,[||];-14,0,[||];-15,0,[||];-16,0,[||];-17,0,[||];-18,0,[||];-19,0,[||];-20,0,[||];-21,0,[||];-22,0,[||];-23,0,[||];-24,0,[||];-25,0,[||];-26,0,[||];-27,0,[||];-28,0,[||];-29,0,[||];-30,0,[||];-31,0,[||];-32,0,[||];-33,0,[||];-34,0,[||];-35,0,[||]|];[|-1,0,[||];-3,1,[||];-8,2,[|")"|];-9,2,[||];-14,0,[||];-15,0,[||];-16,0,[||];-17,0,[||];-18,0,[||];-19,0,[||];-20,0,[||];-21,0,[||];-22,0,[||];-23,0,[||];-24,0,[||];-25,0,[||];-26,0,[||];-27,0,[||];-28,0,[||];-29,0,[||];-30,0,[||];-31,0,[||];-32,0,[||];-33,0,[||];-34,0,[||];-35,0,[||]|];[|-3,2,[|"(";")";"FALSE";"FUNCTION";"NEGATIVE";"NUMBER";"POSITIVE";"QUOTE";"REFERENCE";"TRUE"|]|];[|-1,0,[||];-2,0,[||];-3,0,[||];-7,1,[|")"|];-8,1,[||];-9,1,[||];-10,1,[||];-13,1,[||];-14,0,[||];-15,0,[||];-16,0,[||];-17,0,[||];-18,0,[||];-19,0,[||];-20,0,[||];-21,0,[||];-22,0,[||];-23,0,[||];-24,0,[||];-25,0,[||];-26,0,[||];-27,0,[||];-28,0,[||];-29,0,[||];-30,0,[||];-31,0,[||];-32,0,[||];-33,0,[||];-34,0,[||];-35,0,[||]|];[|-12,1,[|"(";")";",";"FALSE";"FUNCTION";"NEGATIVE";"NUMBER";"POSITIVE";"QUOTE";"REFERENCE";"TRUE"|]|];[|-13,2,[|"(";")";",";"FALSE";"FUNCTION";"NEGATIVE";"NUMBER";"POSITIVE";"QUOTE";"REFERENCE";"TRUE"|]|];[|-14,0,[||];-14,1,[||];-15,0,[||];-16,0,[||];-17,0,[||];-18,0,[||];-19,0,[||];-20,0,[||];-21,0,[||];-22,0,[||];-23,0,[||];-24,0,[||];-25,0,[||];-26,0,[||];-27,0,[||];-28,0,[||];-29,0,[||];-30,0,[||];-31,0,[||];-32,0,[||];-33,0,[||];-34,0,[||];-35,0,[||]|];[|-14,2,[||];-23,1,[||];-24,1,[||];-25,1,[||];-26,1,[||];-27,1,[||];-28,1,[||];-29,1,[||];-30,1,[||];-31,1,[||];-32,1,[||];-33,1,[||];-34,1,[||];-35,1,[||]|];[|-14,3,[|"";"%";"&";")";"*";"+";",";"-";"/";"<";"<=";"<>";"=";">";">=";"^"|]|];[|-15,1,[|"";"%";"&";")";"*";"+";",";"-";"/";"<";"<=";"<>";"=";">";">=";"^"|]|];[|-16,1,[||]|];[|-1,0,[||];-2,0,[||];-3,0,[||];-4,0,[|")"|];-5,0,[||];-6,0,[||];-7,0,[||];-8,0,[||];-9,0,[||];-10,0,[||];-11,0,[||];-12,0,[||];-13,0,[||];-14,0,[||];-15,0,[||];-16,0,[||];-16,2,[||];-17,0,[||];-18,0,[||];-19,0,[||];-20,0,[||];-21,0,[||];-22,0,[||];-23,0,[||];-24,0,[||];-25,0,[||];-26,0,[||];-27,0,[||];-28,0,[||];-29,0,[||];-30,0,[||];-31,0,[||];-32,0,[||];-33,0,[||];-34,0,[||];-35,0,[||]|];[|-16,3,[||]|];[|-16,4,[|"";"%";"&";")";"*";"+";",";"-";"/";"<";"<=";"<>";"=";">";">=";"^"|]|];[|-14,0,[||];-15,0,[||];-16,0,[||];-17,0,[||];-17,1,[||];-18,0,[||];-19,0,[||];-20,0,[||];-21,0,[||];-22,0,[||];-23,0,[||];-24,0,[||];-25,0,[||];-26,0,[||];-27,0,[||];-28,0,[||];-29,0,[||];-30,0,[||];-31,0,[||];-32,0,[||];-33,0,[||];-34,0,[||];-35,0,[||]|];[|-17,2,[|"";"%";"&";")";"*";"+";",";"-";"/";"<";"<=";"<>";"=";">";">=";"^"|]|];[|-18,1,[|"";"%";"&";")";"*";"+";",";"-";"/";"<";"<=";"<>";"=";">";">=";"^"|]|];[|-14,0,[||];-15,0,[||];-16,0,[||];-17,0,[||];-18,0,[||];-19,0,[||];-19,1,[||];-20,0,[||];-21,0,[||];-22,0,[||];-23,0,[||];-24,0,[||];-25,0,[||];-26,0,[||];-27,0,[||];-28,0,[||];-29,0,[||];-30,0,[||];-31,0,[||];-32,0,[||];-33,0,[||];-34,0,[||];-35,0,[||]|];[|-19,2,[|"";"%";"&";")";"*";"+";",";"-";"/";"<";"<=";"<>";"=";">";">=";"^"|]|];[|-20,1,[|"";"%";"&";")";"*";"+";",";"-";"/";"<";"<=";"<>";"=";">";">=";"^"|]|];[|-21,1,[|"";"%";"&";")";"*";"+";",";"-";"/";"<";"<=";"<>";"=";">";">=";"^"|]|];[|-22,1,[|"";"%";"&";")";"*";"+";",";"-";"/";"<";"<=";"<>";"=";">";">=";"^"|]|];[|-23,1,[||];-24,3,[|"";"&";")";",";"<";"<=";"<>";"=";">";">="|];-25,1,[||];-26,1,[||];-27,1,[||];-28,1,[||];-35,1,[||]|];[|-23,1,[||];-25,3,[|"";"&";")";"*";"+";",";"-";"/";"<";"<=";"<>";"=";">";">="|];-35,1,[||]|];[|-23,1,[||];-25,1,[||];-26,3,[|"";"&";")";"+";",";"-";"<";"<=";"<>";"=";">";">="|];-28,1,[||];-35,1,[||]|];[|-23,1,[||];-25,1,[||];-27,3,[|"";"&";")";"+";",";"-";"<";"<=";"<>";"=";">";">="|];-28,1,[||];-35,1,[||]|];[|-23,1,[||];-28,3,[|"";"&";")";"*";"+";",";"-";"/";"<";"<=";"<>";"=";">";">="|];-35,1,[||]|];[|-23,1,[||];-24,1,[||];-25,1,[||];-26,1,[||];-27,1,[||];-28,1,[||];-29,3,[|"";")";","|];-35,1,[||]|];[|-23,1,[||];-24,1,[||];-25,1,[||];-26,1,[||];-27,1,[||];-28,1,[||];-30,3,[|"";")";","|];-35,1,[||]|];[|-23,1,[||];-24,1,[||];-25,1,[||];-26,1,[||];-27,1,[||];-28,1,[||];-31,3,[|"";")";","|];-35,1,[||]|];[|-23,1,[||];-24,1,[||];-25,1,[||];-26,1,[||];-27,1,[||];-28,1,[||];-32,3,[|"";")";","|];-35,1,[||]|];[|-23,1,[||];-24,1,[||];-25,1,[||];-26,1,[||];-27,1,[||];-28,1,[||];-33,3,[|"";")";","|];-35,1,[||]|];[|-23,1,[||];-24,1,[||];-25,1,[||];-26,1,[||];-27,1,[||];-28,1,[||];-34,3,[|"";")";","|];-35,1,[||]|];[|-23,1,[||];-35,3,[|"";"&";")";"*";"+";",";"-";"/";"<";"<=";"<>";"=";">";">=";"^"|]|];[|-23,2,[|"";"%";"&";")";"*";"+";",";"-";"/";"<";"<=";"<>";"=";">";">=";"^"|]|];[|-14,0,[||];-15,0,[||];-16,0,[||];-17,0,[||];-18,0,[||];-19,0,[||];-20,0,[||];-21,0,[||];-22,0,[||];-23,0,[||];-24,0,[||];-24,2,[||];-25,0,[||];-26,0,[||];-27,0,[||];-28,0,[||];-29,0,[||];-30,0,[||];-31,0,[||];-32,0,[||];-33,0,[||];-34,0,[||];-35,0,[||]|];[|-14,0,[||];-15,0,[||];-16,0,[||];-17,0,[||];-18,0,[||];-19,0,[||];-20,0,[||];-21,0,[||];-22,0,[||];-23,0,[||];-24,0,[||];-25,0,[||];-25,2,[||];-26,0,[||];-27,0,[||];-28,0,[||];-29,0,[||];-30,0,[||];-31,0,[||];-32,0,[||];-33,0,[||];-34,0,[||];-35,0,[||]|];[|-14,0,[||];-15,0,[||];-16,0,[||];-17,0,[||];-18,0,[||];-19,0,[||];-20,0,[||];-21,0,[||];-22,0,[||];-23,0,[||];-24,0,[||];-25,0,[||];-26,0,[||];-26,2,[||];-27,0,[||];-28,0,[||];-29,0,[||];-30,0,[||];-31,0,[||];-32,0,[||];-33,0,[||];-34,0,[||];-35,0,[||]|];[|-14,0,[||];-15,0,[||];-16,0,[||];-17,0,[||];-18,0,[||];-19,0,[||];-20,0,[||];-21,0,[||];-22,0,[||];-23,0,[||];-24,0,[||];-25,0,[||];-26,0,[||];-27,0,[||];-27,2,[||];-28,0,[||];-29,0,[||];-30,0,[||];-31,0,[||];-32,0,[||];-33,0,[||];-34,0,[||];-35,0,[||]|];[|-14,0,[||];-15,0,[||];-16,0,[||];-17,0,[||];-18,0,[||];-19,0,[||];-20,0,[||];-21,0,[||];-22,0,[||];-23,0,[||];-24,0,[||];-25,0,[||];-26,0,[||];-27,0,[||];-28,0,[||];-28,2,[||];-29,0,[||];-30,0,[||];-31,0,[||];-32,0,[||];-33,0,[||];-34,0,[||];-35,0,[||]|];[|-14,0,[||];-15,0,[||];-16,0,[||];-17,0,[||];-18,0,[||];-19,0,[||];-20,0,[||];-21,0,[||];-22,0,[||];-23,0,[||];-24,0,[||];-25,0,[||];-26,0,[||];-27,0,[||];-28,0,[||];-29,0,[||];-29,2,[||];-30,0,[||];-31,0,[||];-32,0,[||];-33,0,[||];-34,0,[||];-35,0,[||]|];[|-14,0,[||];-15,0,[||];-16,0,[||];-17,0,[||];-18,0,[||];-19,0,[||];-20,0,[||];-21,0,[||];-22,0,[||];-23,0,[||];-24,0,[||];-25,0,[||];-26,0,[||];-27,0,[||];-28,0,[||];-29,0,[||];-30,0,[||];-30,2,[||];-31,0,[||];-32,0,[||];-33,0,[||];-34,0,[||];-35,0,[||]|];[|-14,0,[||];-15,0,[||];-16,0,[||];-17,0,[||];-18,0,[||];-19,0,[||];-20,0,[||];-21,0,[||];-22,0,[||];-23,0,[||];-24,0,[||];-25,0,[||];-26,0,[||];-27,0,[||];-28,0,[||];-29,0,[||];-30,0,[||];-31,0,[||];-31,2,[||];-32,0,[||];-33,0,[||];-34,0,[||];-35,0,[||]|];[|-14,0,[||];-15,0,[||];-16,0,[||];-17,0,[||];-18,0,[||];-19,0,[||];-20,0,[||];-21,0,[||];-22,0,[||];-23,0,[||];-24,0,[||];-25,0,[||];-26,0,[||];-27,0,[||];-28,0,[||];-29,0,[||];-30,0,[||];-31,0,[||];-32,0,[||];-32,2,[||];-33,0,[||];-34,0,[||];-35,0,[||]|];[|-14,0,[||];-15,0,[||];-16,0,[||];-17,0,[||];-18,0,[||];-19,0,[||];-20,0,[||];-21,0,[||];-22,0,[||];-23,0,[||];-24,0,[||];-25,0,[||];-26,0,[||];-27,0,[||];-28,0,[||];-29,0,[||];-30,0,[||];-31,0,[||];-32,0,[||];-33,0,[||];-33,2,[||];-34,0,[||];-35,0,[||]|];[|-14,0,[||];-15,0,[||];-16,0,[||];-17,0,[||];-18,0,[||];-19,0,[||];-20,0,[||];-21,0,[||];-22,0,[||];-23,0,[||];-24,0,[||];-25,0,[||];-26,0,[||];-27,0,[||];-28,0,[||];-29,0,[||];-30,0,[||];-31,0,[||];-32,0,[||];-33,0,[||];-34,0,[||];-34,2,[||];-35,0,[||]|];[|-14,0,[||];-15,0,[||];-16,0,[||];-17,0,[||];-18,0,[||];-19,0,[||];-20,0,[||];-21,0,[||];-22,0,[||];-23,0,[||];-24,0,[||];-25,0,[||];-26,0,[||];-27,0,[||];-28,0,[||];-29,0,[||];-30,0,[||];-31,0,[||];-32,0,[||];-33,0,[||];-34,0,[||];-35,0,[||];-35,2,[||]|]|]
-let header = "open ExcelCompiler.ExcelTokenUtils\r\nopen ExcelCompiler.ExcelExprUtils\r\ntype token = ExcelToken"
-let declarations = [|"FUNCTION","string";"NUMBER","string";"QUOTE","string";"REFERENCE","string list*string list";"expr","ExcelExpr";"arguments","ExcelExpr option list";"argumentList","list<ExcelExpr*int>";"argument","ExcelExpr*int";"commas","int"|]
 open ExcelCompiler.ExcelTokenUtils
 open ExcelCompiler.ExcelExprUtils
 type token = ExcelToken
-let fxRules:(string list*(obj[]->obj))[] = [|
-    ["expr";"FUNCTION";"(";"arguments";")"],fun (ss:obj[]) ->
-            let s0 = unbox<string> ss.[0]
-            let s2 = unbox<ExcelExpr option list> ss.[2]
-            let result:ExcelExpr =
-                Func(s0, s2)
-            box result
-    ["expr";"REFERENCE"],fun (ss:obj[]) ->
-            let s0 = unbox<string list*string list> ss.[0]
-            let result:ExcelExpr =
-                Reference s0
-            box result
-    ["expr";"NUMBER"],fun (ss:obj[]) ->
-            let s0 = unbox<string> ss.[0]
-            let result:ExcelExpr =
-                Number s0
-            box result
-    ["expr";"QUOTE"],fun (ss:obj[]) ->
-            let s0 = unbox<string> ss.[0]
-            let result:ExcelExpr =
-                Quote s0
-            box result
-    ["expr";"FALSE"],fun (ss:obj[]) ->
-            let result:ExcelExpr =
-                False
-            box result
-    ["expr";"TRUE"],fun (ss:obj[]) ->
-            let result:ExcelExpr =
-                True
-            box result
-    ["expr";"(";"expr";")"],fun (ss:obj[]) ->
-            let s1 = unbox<ExcelExpr> ss.[1]
-            let result:ExcelExpr =
-                s1
-            box result
-    ["expr";"expr";"=";"expr"],fun (ss:obj[]) ->
-            let s0 = unbox<ExcelExpr> ss.[0]
-            let s2 = unbox<ExcelExpr> ss.[2]
-            let result:ExcelExpr =
-                Eq(s0,s2)
-            box result
-    ["expr";"expr";"<";"expr"],fun (ss:obj[]) ->
-            let s0 = unbox<ExcelExpr> ss.[0]
-            let s2 = unbox<ExcelExpr> ss.[2]
-            let result:ExcelExpr =
-                Lt(s0,s2)
-            box result
-    ["expr";"expr";"<=";"expr"],fun (ss:obj[]) ->
-            let s0 = unbox<ExcelExpr> ss.[0]
-            let s2 = unbox<ExcelExpr> ss.[2]
-            let result:ExcelExpr =
-                Le(s0,s2)
-            box result
-    ["expr";"expr";">";"expr"],fun (ss:obj[]) ->
-            let s0 = unbox<ExcelExpr> ss.[0]
-            let s2 = unbox<ExcelExpr> ss.[2]
-            let result:ExcelExpr =
-                Gt(s0,s2)
-            box result
-    ["expr";"expr";">=";"expr"],fun (ss:obj[]) ->
-            let s0 = unbox<ExcelExpr> ss.[0]
-            let s2 = unbox<ExcelExpr> ss.[2]
-            let result:ExcelExpr =
-                Ge(s0,s2)
-            box result
-    ["expr";"expr";"<>";"expr"],fun (ss:obj[]) ->
-            let s0 = unbox<ExcelExpr> ss.[0]
-            let s2 = unbox<ExcelExpr> ss.[2]
-            let result:ExcelExpr =
-                Ne(s0,s2)
-            box result
-    ["expr";"expr";"&";"expr"],fun (ss:obj[]) ->
-            let s0 = unbox<ExcelExpr> ss.[0]
-            let s2 = unbox<ExcelExpr> ss.[2]
-            let result:ExcelExpr =
-                Concat(s0,s2)
-            box result
-    ["expr";"expr";"+";"expr"],fun (ss:obj[]) ->
-            let s0 = unbox<ExcelExpr> ss.[0]
-            let s2 = unbox<ExcelExpr> ss.[2]
-            let result:ExcelExpr =
-                Add(s0,s2)
-            box result
-    ["expr";"expr";"-";"expr"],fun (ss:obj[]) ->
-            let s0 = unbox<ExcelExpr> ss.[0]
-            let s2 = unbox<ExcelExpr> ss.[2]
-            let result:ExcelExpr =
-                Sub(s0,s2)
-            box result
-    ["expr";"expr";"*";"expr"],fun (ss:obj[]) ->
-            let s0 = unbox<ExcelExpr> ss.[0]
-            let s2 = unbox<ExcelExpr> ss.[2]
-            let result:ExcelExpr =
-                Mul(s0,s2)
-            box result
-    ["expr";"expr";"/";"expr"],fun (ss:obj[]) ->
-            let s0 = unbox<ExcelExpr> ss.[0]
-            let s2 = unbox<ExcelExpr> ss.[2]
-            let result:ExcelExpr =
-                Div(s0,s2)
-            box result
-    ["expr";"expr";"^";"expr"],fun (ss:obj[]) ->
-            let s0 = unbox<ExcelExpr> ss.[0]
-            let s2 = unbox<ExcelExpr> ss.[2]
-            let result:ExcelExpr =
-                Pow(s0,s2)
-            box result
-    ["expr";"expr";"%"],fun (ss:obj[]) ->
-            let s0 = unbox<ExcelExpr> ss.[0]
-            let result:ExcelExpr =
-                Percent s0
-            box result
-    ["expr";"POSITIVE";"expr"],fun (ss:obj[]) ->
-            let s1 = unbox<ExcelExpr> ss.[1]
-            let result:ExcelExpr =
-                Positive s1
-            box result
-    ["expr";"NEGATIVE";"expr"],fun (ss:obj[]) ->
-            let s1 = unbox<ExcelExpr> ss.[1]
-            let result:ExcelExpr =
-                Negative s1
-            box result
-    ["arguments"],fun (ss:obj[]) ->
-            let result:ExcelExpr option list =
-                []
-            box result
-    ["arguments";"expr"],fun (ss:obj[]) ->
-            let s0 = unbox<ExcelExpr> ss.[0]
-            let result:ExcelExpr option list =
-                [Some s0]
-            box result
-    ["arguments";"argumentList"],fun (ss:obj[]) ->
-            let s0 = unbox<list<ExcelExpr*int>> ss.[0]
-            let result:ExcelExpr option list =
-                [
-                    yield! fromArgumentList s0
-                    yield None
-                ]
-            box result
-    ["arguments";"commas"],fun (ss:obj[]) ->
-            let s0 = unbox<int> ss.[0]
-            let result:ExcelExpr option list =
-                fromCommas (s0+1)
-            box result
-    ["arguments";"commas";"expr"],fun (ss:obj[]) ->
-            let s0 = unbox<int> ss.[0]
-            let s1 = unbox<ExcelExpr> ss.[1]
-            let result:ExcelExpr option list =
-                [
-                    yield! fromCommas s0
-                    yield Some s1
-                ]
-            box result
-    ["arguments";"argumentList";"expr"],fun (ss:obj[]) ->
-            let s0 = unbox<list<ExcelExpr*int>> ss.[0]
-            let s1 = unbox<ExcelExpr> ss.[1]
-            let result:ExcelExpr option list =
-                [
-                    yield! fromArgumentList s0
-                    yield Some s1
-                ]
-            box result
-    ["arguments";"commas";"argumentList"],fun (ss:obj[]) ->
-            let s0 = unbox<int> ss.[0]
-            let s1 = unbox<list<ExcelExpr*int>> ss.[1]
-            let result:ExcelExpr option list =
-                [
-                    yield! fromCommas s0
-                    yield! fromArgumentList s1
-                    yield None
-                ]
-            box result
-    ["arguments";"commas";"argumentList";"expr"],fun (ss:obj[]) ->
-            let s0 = unbox<int> ss.[0]
-            let s1 = unbox<list<ExcelExpr*int>> ss.[1]
-            let s2 = unbox<ExcelExpr> ss.[2]
-            let result:ExcelExpr option list =
-                [
-                    yield! fromCommas s0
-                    yield! fromArgumentList s1
-                    yield Some s2
-                ]
-            box result
-    ["argumentList";"argument"],fun (ss:obj[]) ->
-            let s0 = unbox<ExcelExpr*int> ss.[0]
-            let result:list<ExcelExpr*int> =
-                [s0]
-            box result
-    ["argumentList";"argumentList";"argument"],fun (ss:obj[]) ->
-            let s0 = unbox<list<ExcelExpr*int>> ss.[0]
-            let s1 = unbox<ExcelExpr*int> ss.[1]
-            let result:list<ExcelExpr*int> =
-                s1::s0
-            box result
-    ["argument";"expr";"commas"],fun (ss:obj[]) ->
-            let s0 = unbox<ExcelExpr> ss.[0]
-            let s1 = unbox<int> ss.[1]
-            let result:ExcelExpr*int =
-                s0,s1
-            box result
-    ["commas";","],fun (ss:obj[]) ->
-            let result:int =
-                1
-            box result
-    ["commas";"commas";","],fun (ss:obj[]) ->
-            let s0 = unbox<int> ss.[0]
-            let result:int =
-                s0 + 1
-            box result
-|]
 open FslexFsyacc.Runtime
-let parser = Parser<token>(fxRules,actions,closures,getTag,getLexeme)
+let rules:(string list*(obj[]->obj))[] = [|
+    ["expr";"FUNCTION";"(";"arguments";")"],fun (ss:obj[]) ->
+        let s0 = unbox<string> ss.[0]
+        let s2 = unbox<ExcelExpr option list> ss.[2]
+        let result:ExcelExpr =
+            Func(s0, s2)
+        box result
+    ["expr";"REFERENCE"],fun (ss:obj[]) ->
+        let s0 = unbox<string list*string list> ss.[0]
+        let result:ExcelExpr =
+            Reference s0
+        box result
+    ["expr";"NUMBER"],fun (ss:obj[]) ->
+        let s0 = unbox<string> ss.[0]
+        let result:ExcelExpr =
+            Number s0
+        box result
+    ["expr";"QUOTE"],fun (ss:obj[]) ->
+        let s0 = unbox<string> ss.[0]
+        let result:ExcelExpr =
+            Quote s0
+        box result
+    ["expr";"FALSE"],fun (ss:obj[]) ->
+        let result:ExcelExpr =
+            False
+        box result
+    ["expr";"TRUE"],fun (ss:obj[]) ->
+        let result:ExcelExpr =
+            True
+        box result
+    ["expr";"(";"expr";")"],fun (ss:obj[]) ->
+        let s1 = unbox<ExcelExpr> ss.[1]
+        let result:ExcelExpr =
+            s1
+        box result
+    ["expr";"expr";"=";"expr"],fun (ss:obj[]) ->
+        let s0 = unbox<ExcelExpr> ss.[0]
+        let s2 = unbox<ExcelExpr> ss.[2]
+        let result:ExcelExpr =
+            Eq(s0,s2)
+        box result
+    ["expr";"expr";"<";"expr"],fun (ss:obj[]) ->
+        let s0 = unbox<ExcelExpr> ss.[0]
+        let s2 = unbox<ExcelExpr> ss.[2]
+        let result:ExcelExpr =
+            Lt(s0,s2)
+        box result
+    ["expr";"expr";"<=";"expr"],fun (ss:obj[]) ->
+        let s0 = unbox<ExcelExpr> ss.[0]
+        let s2 = unbox<ExcelExpr> ss.[2]
+        let result:ExcelExpr =
+            Le(s0,s2)
+        box result
+    ["expr";"expr";">";"expr"],fun (ss:obj[]) ->
+        let s0 = unbox<ExcelExpr> ss.[0]
+        let s2 = unbox<ExcelExpr> ss.[2]
+        let result:ExcelExpr =
+            Gt(s0,s2)
+        box result
+    ["expr";"expr";">=";"expr"],fun (ss:obj[]) ->
+        let s0 = unbox<ExcelExpr> ss.[0]
+        let s2 = unbox<ExcelExpr> ss.[2]
+        let result:ExcelExpr =
+            Ge(s0,s2)
+        box result
+    ["expr";"expr";"<>";"expr"],fun (ss:obj[]) ->
+        let s0 = unbox<ExcelExpr> ss.[0]
+        let s2 = unbox<ExcelExpr> ss.[2]
+        let result:ExcelExpr =
+            Ne(s0,s2)
+        box result
+    ["expr";"expr";"&";"expr"],fun (ss:obj[]) ->
+        let s0 = unbox<ExcelExpr> ss.[0]
+        let s2 = unbox<ExcelExpr> ss.[2]
+        let result:ExcelExpr =
+            Concat(s0,s2)
+        box result
+    ["expr";"expr";"+";"expr"],fun (ss:obj[]) ->
+        let s0 = unbox<ExcelExpr> ss.[0]
+        let s2 = unbox<ExcelExpr> ss.[2]
+        let result:ExcelExpr =
+            Add(s0,s2)
+        box result
+    ["expr";"expr";"-";"expr"],fun (ss:obj[]) ->
+        let s0 = unbox<ExcelExpr> ss.[0]
+        let s2 = unbox<ExcelExpr> ss.[2]
+        let result:ExcelExpr =
+            Sub(s0,s2)
+        box result
+    ["expr";"expr";"*";"expr"],fun (ss:obj[]) ->
+        let s0 = unbox<ExcelExpr> ss.[0]
+        let s2 = unbox<ExcelExpr> ss.[2]
+        let result:ExcelExpr =
+            Mul(s0,s2)
+        box result
+    ["expr";"expr";"/";"expr"],fun (ss:obj[]) ->
+        let s0 = unbox<ExcelExpr> ss.[0]
+        let s2 = unbox<ExcelExpr> ss.[2]
+        let result:ExcelExpr =
+            Div(s0,s2)
+        box result
+    ["expr";"expr";"^";"expr"],fun (ss:obj[]) ->
+        let s0 = unbox<ExcelExpr> ss.[0]
+        let s2 = unbox<ExcelExpr> ss.[2]
+        let result:ExcelExpr =
+            Pow(s0,s2)
+        box result
+    ["expr";"expr";"%"],fun (ss:obj[]) ->
+        let s0 = unbox<ExcelExpr> ss.[0]
+        let result:ExcelExpr =
+            Percent s0
+        box result
+    ["expr";"POSITIVE";"expr"],fun (ss:obj[]) ->
+        let s1 = unbox<ExcelExpr> ss.[1]
+        let result:ExcelExpr =
+            Positive s1
+        box result
+    ["expr";"NEGATIVE";"expr"],fun (ss:obj[]) ->
+        let s1 = unbox<ExcelExpr> ss.[1]
+        let result:ExcelExpr =
+            Negative s1
+        box result
+    ["arguments"],fun (ss:obj[]) ->
+        let result:ExcelExpr option list =
+            []
+        box result
+    ["arguments";"expr"],fun (ss:obj[]) ->
+        let s0 = unbox<ExcelExpr> ss.[0]
+        let result:ExcelExpr option list =
+            [Some s0]
+        box result
+    ["arguments";"argumentList"],fun (ss:obj[]) ->
+        let s0 = unbox<list<ExcelExpr*int>> ss.[0]
+        let result:ExcelExpr option list =
+            [
+                yield! fromArgumentList s0
+                yield None
+            ]
+        box result
+    ["arguments";"commas"],fun (ss:obj[]) ->
+        let s0 = unbox<int> ss.[0]
+        let result:ExcelExpr option list =
+            fromCommas (s0+1)
+        box result
+    ["arguments";"commas";"expr"],fun (ss:obj[]) ->
+        let s0 = unbox<int> ss.[0]
+        let s1 = unbox<ExcelExpr> ss.[1]
+        let result:ExcelExpr option list =
+            [
+                yield! fromCommas s0
+                yield Some s1
+            ]
+        box result
+    ["arguments";"argumentList";"expr"],fun (ss:obj[]) ->
+        let s0 = unbox<list<ExcelExpr*int>> ss.[0]
+        let s1 = unbox<ExcelExpr> ss.[1]
+        let result:ExcelExpr option list =
+            [
+                yield! fromArgumentList s0
+                yield Some s1
+            ]
+        box result
+    ["arguments";"commas";"argumentList"],fun (ss:obj[]) ->
+        let s0 = unbox<int> ss.[0]
+        let s1 = unbox<list<ExcelExpr*int>> ss.[1]
+        let result:ExcelExpr option list =
+            [
+                yield! fromCommas s0
+                yield! fromArgumentList s1
+                yield None
+            ]
+        box result
+    ["arguments";"commas";"argumentList";"expr"],fun (ss:obj[]) ->
+        let s0 = unbox<int> ss.[0]
+        let s1 = unbox<list<ExcelExpr*int>> ss.[1]
+        let s2 = unbox<ExcelExpr> ss.[2]
+        let result:ExcelExpr option list =
+            [
+                yield! fromCommas s0
+                yield! fromArgumentList s1
+                yield Some s2
+            ]
+        box result
+    ["argumentList";"argument"],fun (ss:obj[]) ->
+        let s0 = unbox<ExcelExpr*int> ss.[0]
+        let result:list<ExcelExpr*int> =
+            [s0]
+        box result
+    ["argumentList";"argumentList";"argument"],fun (ss:obj[]) ->
+        let s0 = unbox<list<ExcelExpr*int>> ss.[0]
+        let s1 = unbox<ExcelExpr*int> ss.[1]
+        let result:list<ExcelExpr*int> =
+            s1::s0
+        box result
+    ["argument";"expr";"commas"],fun (ss:obj[]) ->
+        let s0 = unbox<ExcelExpr> ss.[0]
+        let s1 = unbox<int> ss.[1]
+        let result:ExcelExpr*int =
+            s0,s1
+        box result
+    ["commas";","],fun (ss:obj[]) ->
+        let result:int =
+            1
+        box result
+    ["commas";"commas";","],fun (ss:obj[]) ->
+        let s0 = unbox<int> ss.[0]
+        let result:int =
+            s0 + 1
+        box result
+|]
+let parser = Parser<token>(rules,actions,closures,getTag,getLexeme)
 let parse(tokens:seq<token>) =
     tokens
     |> parser.parse

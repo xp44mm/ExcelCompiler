@@ -2,7 +2,7 @@
 open ExcelCompiler.ExcelTokenUtils
 open ExcelCompiler.ExcelExprUtils
 type token = ExcelToken
-
+open FslexFsyacc.Runtime
 %}
 expr :
     | FUNCTION "(" arguments ")" { Func(s0, s2) }

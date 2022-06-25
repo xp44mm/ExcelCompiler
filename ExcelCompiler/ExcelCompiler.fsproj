@@ -38,13 +38,13 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="FSharp.Idioms" Version="1.2.5" />
+		<PackageReference Include="FSharp.Idioms" Version="1.2.9" />
 		<PackageReference Include="FSharp.Literals" Version="2.2.9" />
-		<PackageReference Include="FslexFsyacc.Runtime" Version="1.2.9" />
+		<PackageReference Include="FslexFsyacc.Runtime" Version="1.2.18" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Update="FSharp.Core" Version="6.0.3" />
+		<PackageReference Update="FSharp.Core" Version="6.0.5" />
 		<PackageReference Update="System.ValueTuple" Version="4.5.0" />
 	</ItemGroup>
 
