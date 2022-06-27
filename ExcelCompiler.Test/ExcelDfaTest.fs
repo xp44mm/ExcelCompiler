@@ -2,11 +2,14 @@
 
 open System
 open System.IO
+open System.Text
 
 open Xunit
 open Xunit.Abstractions
+
 open FSharp.Literals
 open FSharp.xUnit
+
 open FslexFsyacc.Fslex
 
 type ExcelDfaTest(output:ITestOutputHelper) =
@@ -34,8 +37,23 @@ type ExcelDfaTest(output:ITestOutputHelper) =
         output.WriteLine("output lex:" + outputDir)
 
     [<Fact>]
-    member _.``2 - valid DFA``() =
-        let y = fslex.toFslexDFAFile()
-        Should.equal y.nextStates ExcelDFA.nextStates
-        Should.equal y.header     ExcelDFA.header
-        Should.equal y.rules      ExcelDFA.rules
+    member _.``10 - valid DFA``() =
+        let src = fslex.toFslexDFAFile()
+        Should.equal src.nextStates ExcelDFA.nextStates
+
+        let headerFslex =
+            FSharp.Compiler.SyntaxTreeX.Parser.getDecls("header.fsx",src.header)
+
+        let semansFslex =
+            let mappers = src.generateMappers()
+            FSharp.Compiler.SyntaxTreeX.SourceCodeParser.semansFromMappers mappers
+
+        let header,semans =
+            let filePath = Path.Combine(sourcePath, "ExcelDFA.fs")
+            let text = File.ReadAllText(filePath, Encoding.UTF8)
+            FSharp.Compiler.SyntaxTreeX.SourceCodeParser.getHeaderSemansFromFSharp 1 text
+
+        Should.equal headerFslex header
+        Should.equal semansFslex semans
+
+

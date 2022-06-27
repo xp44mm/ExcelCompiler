@@ -9,9 +9,9 @@
 		<PackageLicenseExpression>LGPL-3.0-or-later</PackageLicenseExpression>
 		<RepositoryUrl>https://github.com/xp44mm/ExcelCompiler</RepositoryUrl>
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-		<PackageReleaseNotes>refac</PackageReleaseNotes>
+		<PackageReleaseNotes>dfa file</PackageReleaseNotes>
 		<PackageProjectUrl>https://github.com/xp44mm/ExcelCompiler</PackageProjectUrl>
-		<Version>1.1.7</Version>
+		<Version>1.1.8</Version>
 		<PackageReadmeFile>readme.md</PackageReadmeFile>
 		<PackageTags>excel; formula parser</PackageTags>
 	</PropertyGroup>

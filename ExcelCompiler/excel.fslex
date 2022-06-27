@@ -1,7 +1,7 @@
 ﻿%{
+open FslexFsyacc.Runtime
 open ExcelCompiler.ExcelTokenUtils
 type token = ExcelToken
-
 %}
 
 unary   = [POSITIVE NEGATIVE]

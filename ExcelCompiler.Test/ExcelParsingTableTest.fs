@@ -119,15 +119,14 @@ type ExcelParsingTableTest(output: ITestOutputHelper) =
 
         let semansFsyacc =
             let mappers = src.generateMappers()
-            FSharp.Compiler.SyntaxTreeX.SourceCodeParser.semansFromFsyacc mappers
+            FSharp.Compiler.SyntaxTreeX.SourceCodeParser.semansFromMappers mappers
 
-        let parseTableDecls = 
+        let fsharp = 
             let filePath = Path.Combine(sourcePath, "ExcelParsingTable.fs")
-            let text = File.ReadAllText(filePath, Encoding.UTF8)
-            FSharp.Compiler.SyntaxTreeX.Parser.getDecls("parseTable.fs",text)
+            File.ReadAllText(filePath, Encoding.UTF8)
 
         let header,semans =
-            FSharp.Compiler.SyntaxTreeX.SourceCodeParser.fromParseTable parseTableDecls
+            FSharp.Compiler.SyntaxTreeX.SourceCodeParser.getHeaderSemansFromFSharp 2 fsharp
 
         Should.equal headerFromFsyacc header
         Should.equal semansFsyacc semans
