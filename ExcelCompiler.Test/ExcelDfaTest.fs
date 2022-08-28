@@ -50,8 +50,8 @@ type ExcelDfaTest(output:ITestOutputHelper) =
 
         let header,semans =
             let filePath = Path.Combine(sourcePath, "ExcelDFA.fs")
-            let text = File.ReadAllText(filePath, Encoding.UTF8)
-            FSharp.Compiler.SyntaxTreeX.SourceCodeParser.getHeaderSemansFromFSharp 1 text
+            File.ReadAllText(filePath, Encoding.UTF8)
+            |> FSharp.Compiler.SyntaxTreeX.SourceCodeParser.getHeaderSemansFromFSharp 1
 
         Should.equal headerFslex header
         Should.equal semansFslex semans
