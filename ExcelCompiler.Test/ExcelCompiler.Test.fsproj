@@ -7,12 +7,12 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<Compile Include="ExcelParsingTableTest.fs" />
+		<Compile Include="ExcelDfaTest.fs" />
 		<Compile Include="NameParserTest.fs" />
 		<Compile Include="ValidationTest.fs" />
 		<Compile Include="RenderFSharpTest.fs" />
 		<Compile Include="ExcelTokenTest.fs" />
-		<Compile Include="ExcelParsingTableTest.fs" />
-		<Compile Include="ExcelDfaTest.fs" />
 		<Compile Include="ExcelTokenNormalizerTest.fs" />
 		<Compile Include="ExcelExprTranslationTest.fs" />
 		<Compile Include="RootsOfEquationsTest.fs" />
@@ -26,8 +26,8 @@
 		<PackageReference Include="FSharp.Idioms" Version="1.2.9" />
 		<PackageReference Include="FSharp.Literals" Version="2.2.9" />
 		<PackageReference Include="FSharp.xUnit" Version="1.2.3" />
-		<PackageReference Include="FslexFsyacc" Version="1.2.29" />
-		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.0" />
+		<PackageReference Include="FslexFsyacc" Version="1.2.30" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.1" />
 		<PackageReference Include="xunit" Version="2.4.2" />
 		<PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
 			<PrivateAssets>all</PrivateAssets>
