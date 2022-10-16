@@ -7,6 +7,7 @@ open System.IO
 open System.Text
 open System.Text.RegularExpressions
 
+open FSharp.Idioms
 open FSharp.Literals
 open FSharp.xUnit
 
@@ -96,15 +97,16 @@ type ExcelParsingTableTest(output: ITestOutputHelper) =
 
         let parseTbl = fsyacc.toFsyaccParseTableFile ()
         //解析表数据
-        let fsharpCode = parseTbl.generate (moduleName)
+        let fsharpCode = parseTbl.generateModule (moduleName)
         let outputDir = Path.Combine(sourcePath, $"{name}.fs")
 
         File.WriteAllText(outputDir, fsharpCode)
         output.WriteLine("output path:" + outputDir)
 
     [<Fact>]
-    member _.``7 - reorganize``() =
-        let fsyacc = fsyacc.start("expr", Set.empty).toRaw()
+    member _.``7 - format fsyacc file``() =
+        let startSymbol = fsyacc.rules.[0] |> Triple.first |> List.head
+        let fsyacc = fsyacc.start(startSymbol, Set.empty).toRaw()
         output.WriteLine(fsyacc.render ())
 
     [<Fact>]

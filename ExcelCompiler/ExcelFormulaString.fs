@@ -12,7 +12,7 @@ let normToken(formula:string) =
 let parseToExpr(formula:string) = 
     formula
     |> normToken
-    |> ExcelParsingTable.parse
+    |> ExcelExprCompiler.parseTokens
 
 let splitName(nameString:string) = NameParser.split nameString
 

@@ -1,8 +1,9 @@
 ﻿module ExcelCompiler.ExcelTokenUtils
-open FSharp.Idioms
+
 open System.Text.RegularExpressions
 
-let getTag = function
+let getTag (token:ExcelToken) = 
+    match token with
     | NUMBER                _ -> "NUMBER"
     | INTEGER               _ -> "INTEGER"
     | QUOTE                 _ -> "QUOTE"
@@ -38,7 +39,7 @@ let getTag = function
     | LBRACKET -> "["
     | RBRACKET -> "]"
     /// 二次分析
-    | REFERENCE             _ -> "REFERENCE"
+    | REFERENCE _ -> "REFERENCE"
 
 let getLexeme = function
     | REFERENCE (x,y) -> box (x,y)
@@ -51,6 +52,8 @@ let getLexeme = function
     | FUNCTION   x -> box x
     | ERROR      x -> box x
     | _ -> null
+
+open FSharp.Idioms
 
 let tokenize(inp:string) =
     ///isUnary=true表示当前元素的下一个元素是一元正负。
@@ -210,10 +213,6 @@ let functionFromId = function
 let numberFromInteger = function
     | INTEGER x -> NUMBER x
     | tok -> failwithf "%A" tok
-
-//let appendNA = function
-//    | [tok] -> [tok;FUNCTION "NA";LPAREN;RPAREN]
-//    | lexbuf -> failwithf "%A" lexbuf
 
 let getRange lexbuf = 
     match lexbuf with
