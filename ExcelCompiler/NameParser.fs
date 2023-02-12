@@ -4,8 +4,10 @@
 let split (nameName:string) =
     let lexemes =
         nameName
-        |> ExcelTokenUtils.tokenize
-        |> List.ofSeq
+        |> ExcelTokenUtils.tokenize 0
+        |> Seq.map(fun x -> x.value)
+        |> Seq.toList
+        
     match lexemes with
     | [(APOSTROPHE ws|ID ws);EXCLAM;ID nm] -> ws,nm
     | [ID nm] -> "", nm

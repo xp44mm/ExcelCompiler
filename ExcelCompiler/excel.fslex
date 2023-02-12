@@ -1,7 +1,7 @@
 ﻿%{
 open FslexFsyacc.Runtime
 open ExcelCompiler.ExcelTokenUtils
-type token = ExcelToken
+type token = Position<ExcelToken>
 %}
 
 unary   = [POSITIVE NEGATIVE]
@@ -14,9 +14,10 @@ wsrange = <worksheets>? <range>
 others = [NUMBER QUOTE ERROR FALSE TRUE "," "(" ")" "=" "<>" "<" "<=" ">" ">=" "&" "+" "-" "*" "/" "^" "%" POSITIVE NEGATIVE "{" "}" "[" "]" ]
 %%
 
-<unary> / INTEGER ":"	   { lexbuf}
-<unary> [ INTEGER NUMBER ] { signNumber lexbuf}
-ID / "("				   { [functionFromId lexbuf.Head]}
-<wsrange>				   { [REFERENCE(getRange lexbuf)]}
-INTEGER					   { [numberFromInteger lexbuf.Head]}
-<others>				   { lexbuf}
+<unary> / INTEGER ":"      { lexbuf.Head }
+<unary> [ INTEGER NUMBER ] { signNumber lexbuf }
+ID / "("                   { functionFromId lexbuf }
+<wsrange>                  { getReference lexbuf }
+INTEGER                    { numberFromInteger lexbuf }
+<others>                   { lexbuf.Head }
+

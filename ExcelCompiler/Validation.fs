@@ -32,12 +32,3 @@ let rec message (tokens: ExcelToken list) =
     | [] -> ""
 
 
-    //| x::y::tail -> 
-    //    let xx = getTag x
-    //    let yy = getTag y
-    //    if exprLasts.Contains xx && not(exprFollows.Contains yy) then
-    //        true
-    //    else
-    //        deprecate (y::tail)
-
-

@@ -214,3 +214,5 @@ let rules:(string list*(obj list->obj))list = [
 ]
 let unboxRoot =
     unbox<ExcelExpr>
+let theoryParser = FslexFsyacc.Runtime.TheoryParser.create(rules, actions, closures)
+let stateSymbolPairs = theoryParser.getStateSymbolPairs()

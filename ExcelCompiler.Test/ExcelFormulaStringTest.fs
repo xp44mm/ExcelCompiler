@@ -14,14 +14,14 @@ type ExcelFormulaStringTest(output: ITestOutputHelper) =
     [<Fact>]
     member _.``tokenize test``() =
         let x = "=(A1+A2)/2"
-        let y = ExcelFormulaString.tokenize x |> List.ofSeq
+        let y = ExcelFormulaString.tokenize x |> Seq.map(fun x -> x.value) |> Seq.toList
         let z = [EQ;LPAREN;ID "A1";ADD;ID "A2";RPAREN;DIV;INTEGER "2"]
         Should.equal y z
 
     [<Fact>]
     member _.``normToken test``() =
         let x = "=sheet1!A2"
-        let y = ExcelFormulaString.normToken x |> List.ofSeq
+        let y = ExcelFormulaString.normToken x |> List.ofSeq  |> List.map(fun x -> x.value)
         let z = [EQ;REFERENCE(["sheet1"],["A2"])]
         Should.equal y z
 

@@ -1,13 +1,13 @@
 ﻿module ExcelCompiler.ExcelFormulaString
 
 /// 
-let tokenize(formula:string) = ExcelTokenUtils.tokenize formula
+let tokenize(formula:string) = ExcelTokenUtils.tokenize 0 formula
 
 let normToken(formula:string) = 
     formula 
-    |> ExcelTokenUtils.tokenize  
+    |> ExcelTokenUtils.tokenize 0 
     |> ExcelDFA.analyze
-    |> Seq.concat
+    //|> Seq.concat
 
 let parseToExpr(formula:string) = 
     formula

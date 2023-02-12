@@ -68,7 +68,9 @@ argument :
 ","+ :
     | "," {1}
     | ","+ "," {s0 + 1}
+
 %%
+
 %nonassoc "<" "<=" "<>" "=" ">" ">="
 %left "&"
 %left "+" "-"
@@ -76,7 +78,9 @@ argument :
 %left "^"
 %left "%"
 %right NEGATIVE POSITIVE
+
 %%
+
 FUNCTION : string
 NUMBER : string
 QUOTE : string

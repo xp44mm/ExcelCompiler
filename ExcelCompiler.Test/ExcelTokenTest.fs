@@ -14,14 +14,14 @@ type ExcelTokenTest (output: ITestOutputHelper) =
     [<Fact>]
     member _.``space test``() =
         let x = " "
-        let y = ExcelTokenUtils.tokenize x
+        let y = ExcelTokenUtils.tokenize 0 x
         Assert.True(Seq.isEmpty y)
 
     [<Fact>]
     member _.``simple operators test``() =
         let x = "!:,()=>=><<=<>&+-*/^%{}[]"
 
-        let y = ExcelTokenUtils.tokenize x |> List.ofSeq
+        let y = ExcelTokenUtils.tokenize 0 x |> Seq.map(fun x -> x.value) |> Seq.toList
         //show y
         Should.equal y [EXCLAM;COLON;COMMA;LPAREN;RPAREN;EQ;GE;GT;LT;LE;NE;AMPERSAND;POSITIVE;NEGATIVE;MUL;DIV;CARET;PERCENT;LBRACE;RBRACE;LBRACKET;RBRACKET]
 
@@ -29,23 +29,23 @@ type ExcelTokenTest (output: ITestOutputHelper) =
     member _.``quete test``() =
         let x = """ "a""b" """
 
-        let y = ExcelTokenUtils.tokenize x |> Seq.exactlyOne
+        let y = ExcelTokenUtils.tokenize 0 x |> Seq.map(fun x -> x.value) |> Seq.toList
         //show y
-        Should.equal y (QUOTE "\"a\"\"b\"")
+        Should.equal y [QUOTE "\"a\"\"b\""]
 
     [<Fact>]
     member _.``APOSTROPHE test``() =
         let x = """ 'a''b' """
 
-        let y = ExcelTokenUtils.tokenize x |> Seq.exactlyOne
+        let y = ExcelTokenUtils.tokenize 0 x |> Seq.map(fun x -> x.value) |> Seq.toList
         //show y
-        Should.equal y (APOSTROPHE "'a''b'")
+        Should.equal y [APOSTROPHE "'a''b'"]
 
     [<Fact>]
     member _.``error test``() =
         let x = """ #DIV/0! #N/A #NAME? #NULL! #NUM! #REF! #VALUE! """
 
-        let y = ExcelTokenUtils.tokenize x |> List.ofSeq
+        let y = ExcelTokenUtils.tokenize 0 x |> Seq.map(fun x -> x.value) |> Seq.toList
         //show y
         Should.equal y [ERROR "#DIV/0!";ERROR "#N/A";ERROR "#NAME?";ERROR "#NULL!";ERROR "#NUM!";ERROR "#REF!";ERROR "#VALUE!"]
 
@@ -53,7 +53,7 @@ type ExcelTokenTest (output: ITestOutputHelper) =
     member _.``dollar test``() =
         let x = """ $a$1 $a $1 $a1 a$1 """
 
-        let y = ExcelTokenUtils.tokenize x |> List.ofSeq
+        let y = ExcelTokenUtils.tokenize 0 x |> Seq.map(fun x -> x.value) |> Seq.toList
         //show y
         Should.equal y [DOLLAR "$a$1";DOLLAR "$a";DOLLAR "$1";DOLLAR "$a1";DOLLAR "a$1"]
 
@@ -61,7 +61,7 @@ type ExcelTokenTest (output: ITestOutputHelper) =
     member _.``number test``() =
         let x = """ 1.1 1e5 1e-5 2e+8 12 """
 
-        let y = ExcelTokenUtils.tokenize x |> List.ofSeq
+        let y = ExcelTokenUtils.tokenize 0 x |> Seq.map(fun x -> x.value) |> Seq.toList
         //show y
         Should.equal y [NUMBER "1.1";NUMBER "1e5";NUMBER "1e-5";NUMBER "2e+8";INTEGER "12"]
 
@@ -69,7 +69,7 @@ type ExcelTokenTest (output: ITestOutputHelper) =
     member _.``bool test``() =
         let x = """ True FALSE true false """
 
-        let y = ExcelTokenUtils.tokenize x |> List.ofSeq
+        let y = ExcelTokenUtils.tokenize 0 x |> Seq.map(fun x -> x.value) |> Seq.toList
         //show y
         Should.equal y [TRUE;FALSE;TRUE;FALSE]
 
@@ -77,7 +77,7 @@ type ExcelTokenTest (output: ITestOutputHelper) =
     member _.``id test``() =
         let x = """ xyz a1 w.u """
 
-        let y = ExcelTokenUtils.tokenize x |> List.ofSeq
+        let y = ExcelTokenUtils.tokenize 0 x |> Seq.map(fun x -> x.value) |> Seq.toList
         //show y
         Should.equal y [ID "xyz";ID "a1";ID "w.u"]
 
