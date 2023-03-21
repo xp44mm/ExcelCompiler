@@ -29,90 +29,111 @@ type ExcelParsingTableTest(output: ITestOutputHelper) =
     let sourcePath = Path.Combine(solutionPath, @"ExcelCompiler")
     let filePath = Path.Combine(sourcePath, @"excel.fsyacc")
     let text = File.ReadAllText(filePath)
-    let rawFsyacc = RawFsyaccFile.parse text
-    let fsyacc = FlatFsyaccFile.fromRaw rawFsyacc
+    //let rawFsyacc = RawFsyaccFile.parse text
+    //let fsyacc = FlatFsyaccFile.fromRaw rawFsyacc
 
     let parseTblName = "ExcelParsingTable"
+    let parseTblModule = $"ExcelCompiler.{parseTblName}"
     let parseTblPath = Path.Combine(sourcePath, $"{parseTblName}.fs")
 
-    [<Fact(Skip="Run manually when required")>]
-    member _.``01 - format fsyacc file``() =
-        let startSymbol = 
-            fsyacc.rules.[0] 
-            |> Triple.first 
-            |> List.head
-        let fsyacc = fsyacc.start(startSymbol, Set.empty).toRaw()
-        output.WriteLine(fsyacc.render ())
+    let grammar text =
+        text
+        |> FlatFsyaccFileUtils.parse
+        |> FlatFsyaccFileUtils.toGrammar
+
+    let ambiguousCollection text =
+        text
+        |> FlatFsyaccFileUtils.parse
+        |> FlatFsyaccFileUtils.toAmbiguousCollection
+
+    //解析表数据
+    let parseTbl text = 
+        text
+        |> FlatFsyaccFileUtils.parse
+        |> FlatFsyaccFileUtils.toFsyaccParseTableFile
+
+    [<Fact>]
+    member _.``01 - norm fsyacc file``() =
+        let fsyacc = 
+            text
+            |> FlatFsyaccFileUtils.parse
+
+        let s0 = 
+            fsyacc.rules
+            |> FlatFsyaccFileRule.getStartSymbol
+
+        let src = 
+            fsyacc.start(s0, Set.empty)
+            |> RawFsyaccFile2Utils.fromFlat
+            |> RawFsyaccFile2Utils.render
+
+        output.WriteLine(src)
 
     [<Fact>]
     member _.``02 - list all tokens``() =
-        let grammar =
-            fsyacc.getMainProductions()
-            |> Grammar.from
-
-        let tokens = grammar.terminals
-        let res = set ["%";"&";"(";")";"*";"+";",";"-";"/";"<";"<=";"<>";"=";">";">=";"FALSE";"FUNCTION";"NEGATIVE";"NUMBER";"POSITIVE";"QUOTE";"REFERENCE";"TRUE";"^"]
-
-        //show tokens
-        Should.equal tokens res
+        let grammar = grammar text
+        let y = set ["%";"&";"(";")";"*";"+";",";"-";"/";"<";"<=";"<>";"=";">";">=";"FALSE";"FUNCTION";"NEGATIVE";"NUMBER";"POSITIVE";"QUOTE";"REFERENCE";"TRUE";"^"]
+        show grammar.terminals
+        Should.equal y grammar.terminals
 
     [<Fact>]
-    member _.``03 - precedence Of Productions``() =
-        let collection = 
-            fsyacc.getMainProductions() 
-            |> AmbiguousCollection.create
+    member _.``03 - list all states``() =
+        let collection = ambiguousCollection text
+        
+        let src = collection.render()
+        output.WriteLine(src)
 
-        let terminals = 
-            collection.grammar.terminals
+    [<Fact>]
+    member _.``04 - precedence Of Productions`` () =
+        let collection = ambiguousCollection text
 
-        let productions =
+        let productions = 
             collection.collectConflictedProductions()
 
-        let pprods = 
-            ProductionUtils.precedenceOfProductions terminals productions
+        // production -> %prec
+        let pprods =
+            ProductionUtils.precedenceOfProductions collection.grammar.terminals productions
 
-        let e = [["expr";"expr";"%"],"%";["expr";"expr";"&";"expr"],"&";["expr";"expr";"*";"expr"],"*";["expr";"expr";"+";"expr"],"+";["expr";"expr";"-";"expr"],"-";["expr";"expr";"/";"expr"],"/";["expr";"expr";"<";"expr"],"<";["expr";"expr";"<=";"expr"],"<=";["expr";"expr";"<>";"expr"],"<>";["expr";"expr";"=";"expr"],"=";["expr";"expr";">";"expr"],">";["expr";"expr";">=";"expr"],">=";["expr";"NEGATIVE";"expr"],"NEGATIVE";["expr";"POSITIVE";"expr"],"POSITIVE";["expr";"expr";"^";"expr"],"^"]
-        Should.equal e pprods
+        //优先级应该据此结果给出，不能少，也不应该多。
+        let y = [["expr";"expr";"%"],"%";["expr";"expr";"&";"expr"],"&";["expr";"expr";"*";"expr"],"*";["expr";"expr";"+";"expr"],"+";["expr";"expr";"-";"expr"],"-";["expr";"expr";"/";"expr"],"/";["expr";"expr";"<";"expr"],"<";["expr";"expr";"<=";"expr"],"<=";["expr";"expr";"<>";"expr"],"<>";["expr";"expr";"=";"expr"],"=";["expr";"expr";">";"expr"],">";["expr";"expr";">=";"expr"],">=";["expr";"NEGATIVE";"expr"],"NEGATIVE";["expr";"POSITIVE";"expr"],"POSITIVE";["expr";"expr";"^";"expr"],"^"]
 
-    [<Fact>]
-    member _.``04 - list all states``() =
-        let collection =
-            fsyacc.getMainProductions()
-            |> AmbiguousCollection.create
-        
-        let text = collection.render()
-        output.WriteLine(text)
+        Should.equal y pprods
 
     [<Fact>]
-    member _.``05 - list the type annotaitions``() =
-        let grammar =
-            fsyacc.getMainProductions()
-            |> Grammar.from
+    member _.``05 - list declarations``() =
+        let grammar = grammar text
+
+        let terminals =
+            grammar.terminals
+            |> Seq.map RenderUtils.renderSymbol
+            |> String.concat " "
+
+        let nonterminals =
+            grammar.nonterminals
+            |> Seq.map RenderUtils.renderSymbol
+            |> String.concat " "
 
         let sourceCode =
             [
                 "// Do not list symbols whose return value is always `null`"
-                "// terminals: ref to the returned type of getLexeme"
-                for i in grammar.terminals do
-                    let i = RenderUtils.renderSymbol i
-                    i + " : \"\""
-                "\r\n// nonterminals"
-                for i in grammar.nonterminals do
-                    let i = RenderUtils.renderSymbol i
-                    i + " : \"\""
+                ""
+                "// terminals: ref to the returned type of `getLexeme`"
+                "%type<> " + terminals
+                ""
+                "// nonterminals"
+                "%type<> " + nonterminals
             ] 
             |> String.concat "\r\n"
 
         output.WriteLine(sourceCode)
 
 
-    [<Fact(Skip="once and for all!")>] // 
+    [<Fact()>] // Skip="once and for all!"
     member _.``06 - generate parsing table``() =
-        let moduleName = $"ExcelCompiler.{parseTblName}"
 
-        let parseTbl = fsyacc.toFsyaccParseTableFile ()
+        let parseTbl = parseTbl text
         //解析表数据
-        let fsharpCode = parseTbl.generateModule (moduleName)
+        let fsharpCode = parseTbl.generateModule (parseTblModule)
 
         File.WriteAllText(parseTblPath, fsharpCode)
         output.WriteLine("output path:" + parseTblPath)
@@ -120,16 +141,16 @@ type ExcelParsingTableTest(output: ITestOutputHelper) =
 
     [<Fact>]
     member _.``07 - valid ParseTable``() =
-        let src = fsyacc.toFsyaccParseTableFile()
+        let parseTbl = parseTbl text
 
-        Should.equal src.actions ExcelParsingTable.actions
-        Should.equal src.closures ExcelParsingTable.closures
+        Should.equal parseTbl.actions ExcelParsingTable.actions
+        Should.equal parseTbl.closures ExcelParsingTable.closures
 
         let headerFromFsyacc =
-            FSharp.Compiler.SyntaxTreeX.Parser.getDecls("header.fsx",src.header)
+            FSharp.Compiler.SyntaxTreeX.Parser.getDecls("header.fsx",parseTbl.header)
 
         let semansFsyacc =
-            let mappers = src.generateMappers()
+            let mappers = parseTbl.generateMappers()
             FSharp.Compiler.SyntaxTreeX.SourceCodeParser.semansFromMappers mappers
 
 

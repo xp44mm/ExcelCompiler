@@ -81,12 +81,20 @@ argument :
 
 %%
 
-FUNCTION : string
-NUMBER : string
-QUOTE : string
-REFERENCE : "string list*string list"
-expr : ExcelExpr
-arguments : "ExcelExpr option list"
-argument+ : "list<ExcelExpr*int>"
-argument : "ExcelExpr*int"
-","+ : int
+%type<string> FUNCTION NUMBER QUOTE
+%type<string list*string list> REFERENCE
+%type<ExcelExpr> expr
+%type<ExcelExpr option list> arguments
+%type<list<ExcelExpr*int>> argument+
+%type<ExcelExpr*int> argument
+%type<int> ","+
+
+// FUNCTION : string
+// NUMBER : string
+// QUOTE : string
+// REFERENCE : "string list*string list"
+// expr : ExcelExpr
+// arguments : "ExcelExpr option list"
+// argument+ : "list<ExcelExpr*int>"
+// argument : "ExcelExpr*int"
+// ","+ : int

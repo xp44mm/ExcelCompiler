@@ -4,6 +4,8 @@ open FslexFsyacc.Runtime
 open FSharp.Literals.Literal
 open System
 
+let analyze tokens = ExcelDFA.analyzer.analyze(tokens,ExcelTokenUtils.getTag)
+
 let parser = 
     Parser<Position<ExcelToken>>(
         ExcelParsingTable.rules,
@@ -33,7 +35,7 @@ let compile (txt:string) =
 
     txt
     |> ExcelTokenUtils.tokenize 0
-    |> ExcelDFA.analyze
+    |> analyze
     |> Seq.map(fun tok ->
         tokens <- tok::tokens
         tok

@@ -22,22 +22,25 @@ type ExcelDfaTest(output:ITestOutputHelper) =
     let sourcePath = Path.Combine(solutionPath, @"ExcelCompiler")
     let filePath = Path.Combine(sourcePath, @"excel.fslex")
     let text = File.ReadAllText(filePath)
-    let fslex = FslexFile.parse text
 
-    [<Fact(Skip="once and for all!")>] // 
+    let name = "ExcelDFA"
+    let moduleName = $"ExcelCompiler.{name}"
+    let modulePath = Path.Combine(sourcePath, $"{name}.fs")
+
+    [<Fact()>] // Skip="once and for all!"
     member _.``1 - generate DFA``() =
-        let name = "ExcelDFA"
-        let moduleName = $"ExcelCompiler.{name}"
+        let fslex = FslexFile.parse text
 
         let y = fslex.toFslexDFAFile()
         let result = y.generate(moduleName)
 
-        let outputDir = Path.Combine(sourcePath, $"{name}.fs")
-        File.WriteAllText(outputDir, result)
-        output.WriteLine("output lex:" + outputDir)
+        File.WriteAllText(modulePath, result)
+        output.WriteLine("output lex:" + modulePath)
 
     [<Fact>]
     member _.``10 - valid DFA``() =
+        let fslex = FslexFile.parse text
+
         let src = fslex.toFslexDFAFile()
         Should.equal src.nextStates ExcelDFA.nextStates
 
@@ -49,8 +52,7 @@ type ExcelDfaTest(output:ITestOutputHelper) =
             FSharp.Compiler.SyntaxTreeX.SourceCodeParser.semansFromMappers mappers
 
         let header,semans =
-            let filePath = Path.Combine(sourcePath, "ExcelDFA.fs")
-            File.ReadAllText(filePath, Encoding.UTF8)
+            File.ReadAllText(modulePath, Encoding.UTF8)
             |> FSharp.Compiler.SyntaxTreeX.SourceCodeParser.getHeaderSemansFromFSharp 1
 
         Should.equal headerFslex header

@@ -4,14 +4,14 @@ open ExcelCompiler.ExcelTokenUtils
 type token = Position<ExcelToken>
 %}
 
-unary   = [POSITIVE NEGATIVE]
-worksheet  = [ID APOSTROPHE]
-worksheets = <worksheet> (":" <worksheet>)? "!"
-cell       = [ DOLLAR ID INTEGER ]
-cells      = <cell> ":" <cell>
-range   = [ DOLLAR ID ] | <cells>
-wsrange = <worksheets>? <range>
-others = [NUMBER QUOTE ERROR FALSE TRUE "," "(" ")" "=" "<>" "<" "<=" ">" ">=" "&" "+" "-" "*" "/" "^" "%" POSITIVE NEGATIVE "{" "}" "[" "]" ]
+<unary>   = [POSITIVE NEGATIVE]
+<worksheet>  = [ID APOSTROPHE]
+<worksheets> = <worksheet> (":" <worksheet>)? "!"
+<cell>       = [ DOLLAR ID INTEGER ]
+<cells>      = <cell> ":" <cell>
+<range>   = [ DOLLAR ID ] | <cells>
+<wsrange> = <worksheets>? <range>
+<others> = [NUMBER QUOTE ERROR FALSE TRUE "," "(" ")" "=" "<>" "<" "<=" ">" ">=" "&" "+" "-" "*" "/" "^" "%" POSITIVE NEGATIVE "{" "}" "[" "]" ]
 %%
 
 <unary> / INTEGER ":"      { lexbuf.Head }

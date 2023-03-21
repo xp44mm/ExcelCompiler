@@ -17,7 +17,7 @@ type ExcelTokenNormalizerTest(output: ITestOutputHelper) =
     let norm x = 
         x
         |> ExcelTokenUtils.tokenize 0
-        |> ExcelDFA.analyze
+        |> ExcelExprCompiler.analyze
         //|> Seq.concat
         |> List.ofSeq
 

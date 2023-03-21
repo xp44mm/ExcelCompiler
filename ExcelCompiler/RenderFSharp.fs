@@ -2,7 +2,9 @@
 
 open System
 open FSharp.Idioms
+open FSharp.Idioms.StringOps
 
+///优先级值从fsyacc中生成
 let precedences = 
     Map.ofList [
         "%",9979;"&",9939;"*",9959;"+",9949;"-",9949;"/",9959;"<",9930;"<=",9930;"<>",9930;"=",9930;">",9930;">=",9930;

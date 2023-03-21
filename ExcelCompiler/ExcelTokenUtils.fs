@@ -2,6 +2,9 @@
 
 open System.Text.RegularExpressions
 open FslexFsyacc.Runtime
+open FSharp.Idioms
+open FSharp.Idioms.ActivePatterns
+open FSharp.Idioms.RegularExpressions
 
 let getTag (token:Position<ExcelToken>) = 
     match token.value with
@@ -55,307 +58,306 @@ let getLexeme (token:Position<ExcelToken>) =
     | ERROR      x -> box x
     | _ -> null
 
-open FSharp.Idioms
 
-let tokenize (i:int) (inp:string) =
+let tokenize (pos:int) (inp:string) =
     ///isUnary=true表示当前元素的下一个元素是一元正负。
-    let rec loop isUnary (pos:int) (rest:string) =
+    let rec loop isUnary (i:int) =
         seq {
-            match rest with
+            match inp.[i-pos..] with
             | "" -> ()
 
-            | On(tryMatch(Regex @"^\s+")) (_,rest) ->
-                yield! loop isUnary pos rest
+            | Rgx @"^\s+" capt ->
+                yield! loop isUnary (i+capt.Length)
 
-            | On(tryMatch(Regex(@"^false\b",RegexOptions.IgnoreCase))) (x,rest) ->
+            | Search(Regex(@"^false\b",RegexOptions.IgnoreCase)) x ->
                 let postok = {
-                    index = pos
+                    index = i
                     length = x.Length
                     value = FALSE
                 }
                 yield postok
-                yield! loop isUnary postok.nextIndex rest
+                yield! loop isUnary postok.nextIndex
 
-            | On(tryMatch(Regex(@"^true\b",RegexOptions.IgnoreCase))) (x,rest) ->
+            | Search(Regex(@"^true\b",RegexOptions.IgnoreCase)) x ->
                 let postok = {
-                    index = pos
+                    index = i
                     length = x.Length
                     value = TRUE
                 }
                 yield postok
-                yield! loop isUnary postok.nextIndex rest
+                yield! loop isUnary postok.nextIndex
 
-            | On(tryFirst '!') rest ->
+            | First '!' _ ->
                 let postok = {
-                    index = pos
+                    index = i
                     length = 1
                     value = EXCLAM
                 }
                 yield postok
-                yield! loop isUnary postok.nextIndex rest
+                yield! loop isUnary postok.nextIndex
 
-            | On(tryFirst ':') rest ->
+            | First ':' _ ->
                 let postok = {
-                    index = pos
+                    index = i
                     length = 1
                     value = COLON
                 }
                 yield postok
-                yield! loop isUnary postok.nextIndex rest
+                yield! loop isUnary postok.nextIndex
 
-            | On(tryFirst ',') rest ->
+            | First ',' _ ->
                 let postok = {
-                    index = pos
+                    index = i
                     length = 1
                     value = COMMA
                 }
                 yield postok
-                yield! loop isUnary postok.nextIndex rest
+                yield! loop isUnary postok.nextIndex
 
-            | On(tryFirst '(') rest ->
+            | First '(' _ ->
                 let postok = {
-                    index = pos
+                    index = i
                     length = 1
                     value = LPAREN
                 }
                 yield postok
-                yield! loop isUnary postok.nextIndex rest
+                yield! loop isUnary postok.nextIndex
 
-            | On(tryFirst ')') rest ->
+            | First ')' _ ->
                 let postok = {
-                    index = pos
+                    index = i
                     length = 1
                     value = RPAREN
                 }
                 yield postok
-                yield! loop isUnary postok.nextIndex rest
+                yield! loop isUnary postok.nextIndex
 
-            | On(tryFirst '=') rest ->
+            | First '=' _ ->
                 let postok = {
-                    index = pos
+                    index = i
                     length = 1
                     value = EQ
                 }
                 yield postok
-                yield! loop isUnary postok.nextIndex rest
+                yield! loop isUnary postok.nextIndex
 
-            | On(tryFirst '>') rest ->
-                match rest with
-                | On(tryFirst '=') rest ->
+            | First '>' _ ->
+                match inp.[i-pos+1..] with
+                | First '=' _ ->
                     let postok = {
-                        index = pos
+                        index = i
                         length = 2
                         value = GE
                     }
                     yield postok
-                    yield! loop isUnary postok.nextIndex rest
+                    yield! loop isUnary postok.nextIndex
                 | _ ->
                     let postok = {
-                        index = pos
+                        index = i
                         length = 1
                         value = GT
                     }
                     yield postok
-                    yield! loop isUnary postok.nextIndex rest
+                    yield! loop isUnary postok.nextIndex
 
-            | On(tryFirst '<') rest ->
-                match rest with
-                | On(tryFirst '=') rest ->
+            | First '<' _ ->
+                match inp.[i-pos+1..] with
+                | First '=' _ ->
                     let postok = {
-                        index = pos
+                        index = i
                         length = 2
                         value = LE
                     }
                     yield postok
-                    yield! loop isUnary postok.nextIndex rest
+                    yield! loop isUnary postok.nextIndex
 
-                | On(tryFirst '>') rest ->
+                | First '>' _ ->
                     let postok = {
-                        index = pos
+                        index = i
                         length = 2
                         value = NE
                     }
                     yield postok
-                    yield! loop isUnary postok.nextIndex rest
+                    yield! loop isUnary postok.nextIndex
                 | _ ->
                     let postok = {
-                        index = pos
+                        index = i
                         length = 1
                         value = LT
                     }
                     yield postok
-                    yield! loop isUnary postok.nextIndex rest
+                    yield! loop isUnary postok.nextIndex
 
-            | On(tryFirst '&') rest ->
+            | First '&' _ ->
                 let postok = {
-                    index = pos
+                    index = i
                     length = 1
                     value = AMPERSAND
                 }
                 yield postok
-                yield! loop isUnary postok.nextIndex rest
+                yield! loop isUnary postok.nextIndex
 
-            | On(tryFirst '+') rest ->
+            | First '+' _ ->
                 let postok = {
-                    index = pos
+                    index = i
                     length = 1
                     value = if isUnary then POSITIVE else ADD
                 }
                 yield postok
-                yield! loop true postok.nextIndex rest
+                yield! loop true postok.nextIndex
 
-            | On(tryFirst '-') rest ->
+            | First '-' _ ->
                 let postok = {
-                    index = pos
+                    index = i
                     length = 1
                     value = if isUnary then NEGATIVE else SUB
                 }
                 yield postok
-                yield! loop true postok.nextIndex rest
+                yield! loop true postok.nextIndex
 
-            | On(tryFirst '*') rest ->
+            | First '*' _ ->
                 let postok = {
-                    index = pos
+                    index = i
                     length = 1
                     value = MUL
                 }
                 yield postok
-                yield! loop true postok.nextIndex rest
+                yield! loop true postok.nextIndex
 
-            | On(tryFirst '/') rest ->
+            | First '/' _ ->
                 let postok = {
-                    index = pos
+                    index = i
                     length = 1
                     value = DIV
                 }
                 yield postok
-                yield! loop true postok.nextIndex rest
+                yield! loop true postok.nextIndex
 
-            | On(tryFirst '^') rest ->
+            | First '^' _ ->
                 let postok = {
-                    index = pos
+                    index = i
                     length = 1
                     value = CARET
                 }
                 yield postok
-                yield! loop true postok.nextIndex rest
+                yield! loop true postok.nextIndex
 
-            | On(tryFirst '%') rest ->
+            | First '%' _ ->
                 let postok = {
-                    index = pos
+                    index = i
                     length = 1
                     value = PERCENT
                 }
                 yield postok
-                yield! loop false postok.nextIndex rest
+                yield! loop false postok.nextIndex
 
-            | On(tryFirst '{') rest ->
+            | First '{' _ ->
                 let postok = {
-                    index = pos
+                    index = i
                     length = 1
                     value = LBRACE
                 }
                 yield postok
-                yield! loop false postok.nextIndex rest
+                yield! loop false postok.nextIndex
 
-            | On(tryFirst '}') rest ->
+            | First '}' _ ->
                 let postok = {
-                    index = pos
+                    index = i
                     length = 1
                     value = RBRACE
                 }
                 yield postok
-                yield! loop false postok.nextIndex rest
+                yield! loop false postok.nextIndex
 
-            | On(tryFirst '[') rest ->
+            | First '[' _ ->
                 let postok = {
-                    index = pos
+                    index = i
                     length = 1
                     value = LBRACKET
                 }
                 yield postok
-                yield! loop false postok.nextIndex rest
+                yield! loop false postok.nextIndex
 
-            | On(tryFirst ']') rest ->
+            | First ']' _ ->
                 let postok = {
-                    index = pos
+                    index = i
                     length = 1
                     value = RBRACKET
                 }
                 yield postok
-                yield! loop false postok.nextIndex rest
+                yield! loop false postok.nextIndex
 
-            | On(tryMatch(Regex """^"([^"]|"")*"(?!")""")) (lexeme,rest) ->
+            | Rgx """^"([^"]|"")*"(?!")""" lexeme ->
                 let postok = {
-                    index = pos
+                    index = i
                     length = lexeme.Length
-                    value = QUOTE lexeme // todo:parse
+                    value = QUOTE lexeme.Value // todo:parse
                 }
                 yield postok
-                yield! loop false postok.nextIndex rest
+                yield! loop false postok.nextIndex
 
-            | On(tryMatch(Regex "^'([^']|'')*'(?!')")) (lexeme,rest) ->
+            | Rgx "^'([^']|'')*'(?!')" lexeme ->
                 let postok = {
-                    index = pos
+                    index = i
                     length = lexeme.Length
-                    value = APOSTROPHE lexeme // todo:parse
+                    value = APOSTROPHE lexeme.Value // todo:parse
                 }
                 yield postok
-                yield! loop false postok.nextIndex rest
+                yield! loop false postok.nextIndex
 
-            | On(tryMatch(Regex(@"^#DIV/0!|#N/A\b|#NAME\?|#NULL!|#NUM!|#REF!|#VALUE!",RegexOptions.IgnoreCase))) (lexeme,rest) ->
+            | Search(Regex(@"^#DIV/0!|#N/A\b|#NAME\?|#NULL!|#NUM!|#REF!|#VALUE!",RegexOptions.IgnoreCase)) lexeme ->
                 let postok = {
-                    index = pos
+                    index = i
                     length = lexeme.Length
-                    value = ERROR lexeme // todo:parse
+                    value = ERROR lexeme.Value // todo:parse
                 }
                 yield postok
-                yield! loop false postok.nextIndex rest
+                yield! loop false postok.nextIndex
 
             //至少有一個$的標識符
-            | On(tryMatch(Regex(@"^[0-9A-Z$]*\$[0-9A-Z]+",RegexOptions.IgnoreCase))) (lexeme,rest) ->
+            | Search(Regex(@"^[0-9A-Z$]*\$[0-9A-Z]+",RegexOptions.IgnoreCase)) lexeme ->
                 let postok = {
-                    index = pos
+                    index = i
                     length = lexeme.Length
-                    value = DOLLAR lexeme // todo:parse
+                    value = DOLLAR lexeme.Value // todo:parse
                 }
                 yield postok
-                yield! loop false postok.nextIndex rest
+                yield! loop false postok.nextIndex
 
             //整数
-            | On(tryMatch(Regex @"^\d+\b(?![.])")) (lexeme,rest) ->
+            | Rgx @"^\d+\b(?![.])" lexeme ->
                 let postok = {
-                    index = pos
+                    index = i
                     length = lexeme.Length
-                    value = INTEGER lexeme // todo:parse
+                    value = INTEGER lexeme.Value // todo:parse
                 }
                 yield postok
-                yield! loop false postok.nextIndex rest
+                yield! loop false postok.nextIndex
 
             //小數
-            | On(tryMatch(Regex @"^\d+(\.\d+)?([eE][-+]?\d+)?")) (lexeme,rest) ->
+            | Rgx @"^\d+(\.\d+)?([eE][-+]?\d+)?" (lexeme) ->
                 let postok = {
-                    index = pos
+                    index = i
                     length = lexeme.Length
-                    value = NUMBER lexeme // todo:parse
+                    value = NUMBER lexeme.Value // todo:parse
                 }
                 yield postok
-                yield! loop false postok.nextIndex rest
+                yield! loop false postok.nextIndex
 
             //https://support.office.com/en-us/article/names-in-formulas-fc2935f9-115d-4bef-a370-3aa8bb4c91f1?omkt=en-US&ui=en-US&rs=en-US&ad=US
-            | On(tryMatch(Regex @"^[\w\\.]+")) (lexeme,rest) ->
+            | Rgx @"^[\w\\.]+" (lexeme) ->
                 let postok = {
-                    index = pos
+                    index = i
                     length = lexeme.Length
-                    value = ID lexeme // todo:parse
+                    value = ID lexeme.Value // todo:parse
                 }
                 yield postok
-                yield! loop false postok.nextIndex rest
+                yield! loop false postok.nextIndex
 
-            | _ -> failwith $"tokenize unmatched:{rest}"
+            | rest -> failwith $"tokenize unmatched:{rest}"
         }
 
-    loop true i inp
+    loop true pos
 
 let signNumber (tokens:Position<ExcelToken> list) =
     {
