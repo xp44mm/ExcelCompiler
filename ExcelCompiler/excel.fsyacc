@@ -88,13 +88,3 @@ argument :
 %type<list<ExcelExpr*int>> argument+
 %type<ExcelExpr*int> argument
 %type<int> ","+
-
-// FUNCTION : string
-// NUMBER : string
-// QUOTE : string
-// REFERENCE : "string list*string list"
-// expr : ExcelExpr
-// arguments : "ExcelExpr option list"
-// argument+ : "list<ExcelExpr*int>"
-// argument : "ExcelExpr*int"
-// ","+ : int

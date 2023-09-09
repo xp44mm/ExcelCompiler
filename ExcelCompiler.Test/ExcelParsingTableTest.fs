@@ -64,8 +64,8 @@ type ExcelParsingTableTest(output: ITestOutputHelper) =
 
         let src = 
             fsyacc.start(s0, Set.empty)
-            |> RawFsyaccFile2Utils.fromFlat
-            |> RawFsyaccFile2Utils.render
+            |> RawFsyaccFileUtils.fromFlat
+            |> RawFsyaccFileUtils.render
 
         output.WriteLine(src)
 
