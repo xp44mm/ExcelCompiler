@@ -2,15 +2,14 @@
 
 open Xunit
 open Xunit.Abstractions
-open FSharp.Literals
+open FSharp.Idioms
 open FSharp.xUnit
 
 type ExcelExprTranslationTest(output: ITestOutputHelper) =
     let show res =
         res
-        |> Render.stringify
+        |> Literal.stringify
         |> output.WriteLine
-
 
     [<Fact>]
     member _.``func test``() =

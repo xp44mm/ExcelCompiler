@@ -1,7 +1,7 @@
 ﻿module ExcelCompiler.ExcelExprCompiler
 
 open FslexFsyacc.Runtime
-open FSharp.Literals.Literal
+open FSharp.Idioms.Literal
 open System
 
 let analyze tokens = ExcelDFA.analyzer.analyze(tokens,ExcelTokenUtils.getTag)
@@ -20,18 +20,11 @@ let parseTokens(tokens:seq<Position<ExcelToken>>) =
     |> parser.parse
     |> ExcelParsingTable.unboxRoot
 
-//[<Obsolete("compile")>]
-//let parse (formula:string) =
-//    formula
-//    |> ExcelTokenUtils.tokenize 0
-//    |> ExcelDFA.analyze
-//    |> parseTokens
 
 ///解析公式
 let compile (txt:string) =
     let mutable tokens = []
     let mutable states = [0,null]
-    //let mutable result = defaultValue<_>
 
     txt
     |> ExcelTokenUtils.tokenize 0
