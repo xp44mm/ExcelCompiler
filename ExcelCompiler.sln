@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30621.155
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.34928.147
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "ExcelCompiler", "ExcelCompiler\ExcelCompiler.fsproj", "{6D1C405C-93C8-4F23-A1F7-B5DE15F29EFC}"
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "ExcelCompiler.Test", "ExcelCompiler.Test\ExcelCompiler.Test.fsproj", "{00976E0C-B2B1-4A41-BFA9-A8285F5CE673}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "ExcelCompiler.Generators", "ExcelCompiler.Generators\ExcelCompiler.Generators.fsproj", "{749C2818-6C3F-4834-A5A2-B0FA10DC1E96}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{00976E0C-B2B1-4A41-BFA9-A8285F5CE673}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{00976E0C-B2B1-4A41-BFA9-A8285F5CE673}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{00976E0C-B2B1-4A41-BFA9-A8285F5CE673}.Release|Any CPU.Build.0 = Release|Any CPU
+		{749C2818-6C3F-4834-A5A2-B0FA10DC1E96}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{749C2818-6C3F-4834-A5A2-B0FA10DC1E96}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{749C2818-6C3F-4834-A5A2-B0FA10DC1E96}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{749C2818-6C3F-4834-A5A2-B0FA10DC1E96}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

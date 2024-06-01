@@ -3,17 +3,20 @@
 open FslexFsyacc.Runtime
 open FSharp.Idioms.Literal
 open System
+open ExcelCompiler.ExcelParsingTable
 
 let analyze tokens = ExcelDFA.analyzer.analyze(tokens,ExcelTokenUtils.getTag)
 
 let parser = 
-    Parser<Position<ExcelToken>>(
-        ExcelParsingTable.rules,
-        ExcelParsingTable.actions,
-        ExcelParsingTable.closures,
+    app.getParser<Position<ExcelToken>>(
+        //ExcelParsingTable.rules,
+        //ExcelParsingTable.actions,
+        //ExcelParsingTable.closures,
         
         ExcelTokenUtils.getTag,
         ExcelTokenUtils.getLexeme)
+
+let table = app.getTable parser
 
 let parseTokens(tokens:seq<Position<ExcelToken>>) =
     tokens

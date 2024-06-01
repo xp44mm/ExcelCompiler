@@ -13,20 +13,13 @@ open FSharp.xUnit
 open FslexFsyacc.Fslex
 
 type ExcelDfaTest(output:ITestOutputHelper) =
-    let show res =
-        res
-        |> Literal.stringify
-        |> output.WriteLine
-
-    let solutionPath = DirectoryInfo(__SOURCE_DIRECTORY__).Parent.FullName
-    let sourcePath = Path.Combine(solutionPath, @"ExcelCompiler")
-    let filePath = Path.Combine(sourcePath, @"excel.fslex")
-    let text = File.ReadAllText(filePath)
-    let fslex = FslexFileUtils.parse text
-
     let name = "ExcelDFA"
     let moduleName = $"ExcelCompiler.{name}"
-    let modulePath = Path.Combine(sourcePath, $"{name}.fs")
+    let modulePath = Path.Combine(Dir.sourcePath, $"{name}.fs")
+
+    let filePath = Path.Combine( __SOURCE_DIRECTORY__ , @"excel.fslex")
+    let text = File.ReadAllText(filePath)
+    let fslex = FslexFileUtils.parse text
 
     [<Fact(
     Skip = "once and for all!"
@@ -40,14 +33,14 @@ type ExcelDfaTest(output:ITestOutputHelper) =
 
     [<Fact>]
     member _.``10 - valid DFA``() =
-        let src = fslex|>FslexFileUtils.toFslexDFAFile
-        Should.equal src.nextStates FslexDFA.nextStates
+        let src = fslex |> FslexFileUtils.toFslexDFAFile
+        Should.equal src.nextStates ExcelDFA.nextStates
 
         let headerFslex =
             FSharp.Compiler.SyntaxTreeX.Parser.getDecls("header.fsx",src.header)
 
         let semansFslex =
-            let mappers = src|>FslexDFAFileUtils.generateMappers
+            let mappers = src |> FslexDFAFileUtils.generateMappers
             FSharp.Compiler.SyntaxTreeX.SourceCodeParser.semansFromMappers mappers
 
         let header,semans =
