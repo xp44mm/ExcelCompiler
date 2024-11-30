@@ -5,9 +5,9 @@ open FSharp.Idioms.Literal
 open FSharp.xUnit
 open FslexFsyacc
 open FslexFsyacc.Fsyacc
-open FslexFsyacc.Runtime
-open FslexFsyacc.Runtime.Precedences
-open FslexFsyacc.Runtime.YACCs
+open FslexFsyacc
+open FslexFsyacc.Precedences
+open FslexFsyacc.YACCs
 
 open System.IO
 open System.Text
@@ -26,11 +26,11 @@ type ExcelParsingTableTest(output: ITestOutputHelper) =
 
     let rawFsyacc =
         text
-        |> FsyaccCompiler.compile
+        |> FsyaccCompiler2.compile
 
     let fsyacc =
         rawFsyacc
-        |> FslexFsyacc.Runtime.YACCs.FlatFsyaccFile.from
+        |> FlatFsyaccFile.from
 
     let coder = FsyaccParseTableCoder.from fsyacc
 

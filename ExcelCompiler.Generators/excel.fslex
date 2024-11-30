@@ -1,7 +1,7 @@
 ﻿%{
-open FslexFsyacc.Runtime
+open FslexFsyacc
 open ExcelCompiler.ExcelTokenUtils
-type token = Position<ExcelToken>
+type token = PositionWith<ExcelToken>
 %}
 
 <unary>   = [POSITIVE NEGATIVE]

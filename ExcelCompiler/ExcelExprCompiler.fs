@@ -1,6 +1,6 @@
 ﻿module ExcelCompiler.ExcelExprCompiler
 
-open FslexFsyacc.Runtime
+open FslexFsyacc
 open FSharp.Idioms.Literal
 open System
 open ExcelCompiler.ExcelParsingTable
@@ -8,7 +8,7 @@ open ExcelCompiler.ExcelParsingTable
 let analyze tokens = ExcelDFA.analyzer.analyze(tokens,ExcelTokenUtils.getTag)
 
 let parser = 
-    app.getParser<Position<ExcelToken>>(
+    app.getParser<PositionWith<ExcelToken>>(
         //ExcelParsingTable.rules,
         //ExcelParsingTable.actions,
         //ExcelParsingTable.closures,
@@ -18,7 +18,7 @@ let parser =
 
 let table = app.getTable parser
 
-let parseTokens(tokens:seq<Position<ExcelToken>>) =
+let parseTokens(tokens:seq<PositionWith<ExcelToken>>) =
     tokens
     |> parser.parse
     |> ExcelParsingTable.unboxRoot

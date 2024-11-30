@@ -13,23 +13,23 @@ let rules : list<string list*(obj list->obj)> = [
             s0,s1
         box result
     ["arguments"], fun(ss:obj list)->
-        let result:ExcelExpr option list =
+        let result:list<option<ExcelExpr>> =
             []
         box result
     ["arguments";"expr"], fun(ss:obj list)->
         let s0 = unbox<ExcelExpr> ss.[0]
-        let result:ExcelExpr option list =
+        let result:list<option<ExcelExpr>> =
             [Some s0]
         box result
     ["arguments";"{\",\"+}"], fun(ss:obj list)->
         let s0 = unbox<int> ss.[0]
-        let result:ExcelExpr option list =
+        let result:list<option<ExcelExpr>> =
             fromCommas (s0+1)
         box result
     ["arguments";"{\",\"+}";"expr"], fun(ss:obj list)->
         let s0 = unbox<int> ss.[0]
         let s1 = unbox<ExcelExpr> ss.[1]
-        let result:ExcelExpr option list =
+        let result:list<option<ExcelExpr>> =
             [
                 yield! fromCommas s0
                 yield Some s1
@@ -38,7 +38,7 @@ let rules : list<string list*(obj list->obj)> = [
     ["arguments";"{\",\"+}";"{argument+}"], fun(ss:obj list)->
         let s0 = unbox<int> ss.[0]
         let s1 = unbox<list<ExcelExpr*int>> ss.[1]
-        let result:ExcelExpr option list =
+        let result:list<option<ExcelExpr>> =
             [
                 yield! fromCommas s0
                 yield! fromArgumentList s1
@@ -49,7 +49,7 @@ let rules : list<string list*(obj list->obj)> = [
         let s0 = unbox<int> ss.[0]
         let s1 = unbox<list<ExcelExpr*int>> ss.[1]
         let s2 = unbox<ExcelExpr> ss.[2]
-        let result:ExcelExpr option list =
+        let result:list<option<ExcelExpr>> =
             [
                 yield! fromCommas s0
                 yield! fromArgumentList s1
@@ -58,7 +58,7 @@ let rules : list<string list*(obj list->obj)> = [
         box result
     ["arguments";"{argument+}"], fun(ss:obj list)->
         let s0 = unbox<list<ExcelExpr*int>> ss.[0]
-        let result:ExcelExpr option list =
+        let result:list<option<ExcelExpr>> =
             [
                 yield! fromArgumentList s0
                 yield None
@@ -67,7 +67,7 @@ let rules : list<string list*(obj list->obj)> = [
     ["arguments";"{argument+}";"expr"], fun(ss:obj list)->
         let s0 = unbox<list<ExcelExpr*int>> ss.[0]
         let s1 = unbox<ExcelExpr> ss.[1]
-        let result:ExcelExpr option list =
+        let result:list<option<ExcelExpr>> =
             [
                 yield! fromArgumentList s0
                 yield Some s1
@@ -84,7 +84,7 @@ let rules : list<string list*(obj list->obj)> = [
         box result
     ["expr";"FUNCTION";"(";"arguments";")"], fun(ss:obj list)->
         let s0 = unbox<string> ss.[0]
-        let s2 = unbox<ExcelExpr option list> ss.[2]
+        let s2 = unbox<list<option<ExcelExpr>>> ss.[2]
         let result:ExcelExpr =
             Func(s0, s2)
         box result
@@ -109,7 +109,7 @@ let rules : list<string list*(obj list->obj)> = [
             Quote s0
         box result
     ["expr";"REFERENCE"], fun(ss:obj list)->
-        let s0 = unbox<string list*string list> ss.[0]
+        let s0 = unbox<list<string>*list<string>> ss.[0]
         let result:ExcelExpr =
             Reference s0
         box result
@@ -217,7 +217,7 @@ let rules : list<string list*(obj list->obj)> = [
 ]
 let unboxRoot =
     unbox<ExcelExpr>
-let app: FslexFsyacc.Runtime.ParseTableApp = {
+let app: FslexFsyacc.ParseTableApp = {
     tokens        = tokens
     kernels       = kernels
     kernelSymbols = kernelSymbols

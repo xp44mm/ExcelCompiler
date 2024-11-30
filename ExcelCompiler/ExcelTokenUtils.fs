@@ -1,12 +1,12 @@
 ﻿module ExcelCompiler.ExcelTokenUtils
 
 open System.Text.RegularExpressions
-open FslexFsyacc.Runtime
+open FslexFsyacc
 open FSharp.Idioms
 open FSharp.Idioms.ActivePatterns
 open FSharp.Idioms.RegularExpressions
 
-let getTag (token:Position<ExcelToken>) = 
+let getTag (token:PositionWith<ExcelToken>) = 
     match token.value with
     | NUMBER     _ -> "NUMBER"
     | INTEGER    _ -> "INTEGER"
@@ -45,7 +45,7 @@ let getTag (token:Position<ExcelToken>) =
     /// 二次分析
     | REFERENCE _ -> "REFERENCE"
 
-let getLexeme (token:Position<ExcelToken>) = 
+let getLexeme (token:PositionWith<ExcelToken>) = 
     match token.value with
     | REFERENCE (x,y) -> box (x,y)
     | NUMBER     x -> box x
@@ -78,7 +78,7 @@ let tokenize (offset:int) (input:string) =
                     value = FALSE
                 }
                 yield postok
-                yield! loop isUnary postok.nextIndex rest.[postok.length..]
+                yield! loop isUnary postok.adjacent rest.[postok.length..]
 
             | Search(Regex(@"^true\b",RegexOptions.IgnoreCase)) x ->
                 let postok = {
@@ -87,7 +87,7 @@ let tokenize (offset:int) (input:string) =
                     value = TRUE
                 }
                 yield postok
-                yield! loop isUnary postok.nextIndex rest.[postok.length..]
+                yield! loop isUnary postok.adjacent rest.[postok.length..]
 
             | First '!' _ ->
                 let postok = {
@@ -96,7 +96,7 @@ let tokenize (offset:int) (input:string) =
                     value = EXCLAM
                 }
                 yield postok
-                yield! loop isUnary postok.nextIndex rest.[postok.length..]
+                yield! loop isUnary postok.adjacent rest.[postok.length..]
 
             | First ':' _ ->
                 let postok = {
@@ -105,7 +105,7 @@ let tokenize (offset:int) (input:string) =
                     value = COLON
                 }
                 yield postok
-                yield! loop isUnary postok.nextIndex rest.[postok.length..]
+                yield! loop isUnary postok.adjacent rest.[postok.length..]
 
             | First ',' _ ->
                 let postok = {
@@ -114,7 +114,7 @@ let tokenize (offset:int) (input:string) =
                     value = COMMA
                 }
                 yield postok
-                yield! loop isUnary postok.nextIndex rest.[postok.length..]
+                yield! loop isUnary postok.adjacent rest.[postok.length..]
 
             | First '(' _ ->
                 let postok = {
@@ -123,7 +123,7 @@ let tokenize (offset:int) (input:string) =
                     value = LPAREN
                 }
                 yield postok
-                yield! loop isUnary postok.nextIndex rest.[postok.length..]
+                yield! loop isUnary postok.adjacent rest.[postok.length..]
 
             | First ')' _ ->
                 let postok = {
@@ -132,7 +132,7 @@ let tokenize (offset:int) (input:string) =
                     value = RPAREN
                 }
                 yield postok
-                yield! loop isUnary postok.nextIndex rest.[postok.length..]
+                yield! loop isUnary postok.adjacent rest.[postok.length..]
 
             | First '=' _ ->
                 let postok = {
@@ -141,7 +141,7 @@ let tokenize (offset:int) (input:string) =
                     value = EQ
                 }
                 yield postok
-                yield! loop isUnary postok.nextIndex rest.[postok.length..]
+                yield! loop isUnary postok.adjacent rest.[postok.length..]
 
             | First '>' _ ->
                 match input.[pos-offset+1..] with
@@ -152,7 +152,7 @@ let tokenize (offset:int) (input:string) =
                         value = GE
                     }
                     yield postok
-                    yield! loop isUnary postok.nextIndex rest.[postok.length..]
+                    yield! loop isUnary postok.adjacent rest.[postok.length..]
                 | _ ->
                     let postok = {
                         index = pos
@@ -160,7 +160,7 @@ let tokenize (offset:int) (input:string) =
                         value = GT
                     }
                     yield postok
-                    yield! loop isUnary postok.nextIndex rest.[postok.length..]
+                    yield! loop isUnary postok.adjacent rest.[postok.length..]
 
             | First '<' _ ->
                 match input.[pos-offset+1..] with
@@ -171,7 +171,7 @@ let tokenize (offset:int) (input:string) =
                         value = LE
                     }
                     yield postok
-                    yield! loop isUnary postok.nextIndex rest.[postok.length..]
+                    yield! loop isUnary postok.adjacent rest.[postok.length..]
 
                 | First '>' _ ->
                     let postok = {
@@ -180,7 +180,7 @@ let tokenize (offset:int) (input:string) =
                         value = NE
                     }
                     yield postok
-                    yield! loop isUnary postok.nextIndex rest.[postok.length..]
+                    yield! loop isUnary postok.adjacent rest.[postok.length..]
                 | _ ->
                     let postok = {
                         index = pos
@@ -188,7 +188,7 @@ let tokenize (offset:int) (input:string) =
                         value = LT
                     }
                     yield postok
-                    yield! loop isUnary postok.nextIndex rest.[postok.length..]
+                    yield! loop isUnary postok.adjacent rest.[postok.length..]
 
             | First '&' _ ->
                 let postok = {
@@ -197,7 +197,7 @@ let tokenize (offset:int) (input:string) =
                     value = AMPERSAND
                 }
                 yield postok
-                yield! loop isUnary postok.nextIndex rest.[postok.length..]
+                yield! loop isUnary postok.adjacent rest.[postok.length..]
 
             | First '+' _ ->
                 let postok = {
@@ -206,7 +206,7 @@ let tokenize (offset:int) (input:string) =
                     value = if isUnary then POSITIVE else ADD
                 }
                 yield postok
-                yield! loop true postok.nextIndex rest.[postok.length..]
+                yield! loop true postok.adjacent rest.[postok.length..]
 
             | First '-' _ ->
                 let postok = {
@@ -215,7 +215,7 @@ let tokenize (offset:int) (input:string) =
                     value = if isUnary then NEGATIVE else SUB
                 }
                 yield postok
-                yield! loop true postok.nextIndex rest.[postok.length..]
+                yield! loop true postok.adjacent rest.[postok.length..]
 
             | First '*' _ ->
                 let postok = {
@@ -224,7 +224,7 @@ let tokenize (offset:int) (input:string) =
                     value = MUL
                 }
                 yield postok
-                yield! loop true postok.nextIndex rest.[postok.length..]
+                yield! loop true postok.adjacent rest.[postok.length..]
 
             | First '/' _ ->
                 let postok = {
@@ -233,7 +233,7 @@ let tokenize (offset:int) (input:string) =
                     value = DIV
                 }
                 yield postok
-                yield! loop true postok.nextIndex rest.[postok.length..]
+                yield! loop true postok.adjacent rest.[postok.length..]
 
             | First '^' _ ->
                 let postok = {
@@ -242,7 +242,7 @@ let tokenize (offset:int) (input:string) =
                     value = CARET
                 }
                 yield postok
-                yield! loop true postok.nextIndex rest.[postok.length..]
+                yield! loop true postok.adjacent rest.[postok.length..]
 
             | First '%' _ ->
                 let postok = {
@@ -251,7 +251,7 @@ let tokenize (offset:int) (input:string) =
                     value = PERCENT
                 }
                 yield postok
-                yield! loop false postok.nextIndex rest.[postok.length..]
+                yield! loop false postok.adjacent rest.[postok.length..]
 
             | First '{' _ ->
                 let postok = {
@@ -260,7 +260,7 @@ let tokenize (offset:int) (input:string) =
                     value = LBRACE
                 }
                 yield postok
-                yield! loop false postok.nextIndex rest.[postok.length..]
+                yield! loop false postok.adjacent rest.[postok.length..]
 
             | First '}' _ ->
                 let postok = {
@@ -269,7 +269,7 @@ let tokenize (offset:int) (input:string) =
                     value = RBRACE
                 }
                 yield postok
-                yield! loop false postok.nextIndex rest.[postok.length..]
+                yield! loop false postok.adjacent rest.[postok.length..]
 
             | First '[' _ ->
                 let postok = {
@@ -278,7 +278,7 @@ let tokenize (offset:int) (input:string) =
                     value = LBRACKET
                 }
                 yield postok
-                yield! loop false postok.nextIndex rest.[postok.length..]
+                yield! loop false postok.adjacent rest.[postok.length..]
 
             | First ']' _ ->
                 let postok = {
@@ -287,7 +287,7 @@ let tokenize (offset:int) (input:string) =
                     value = RBRACKET
                 }
                 yield postok
-                yield! loop false postok.nextIndex rest.[postok.length..]
+                yield! loop false postok.adjacent rest.[postok.length..]
 
             | Rgx """^"([^"]|"")*"(?!")""" lexeme ->
                 let postok = {
@@ -296,7 +296,7 @@ let tokenize (offset:int) (input:string) =
                     value = QUOTE lexeme.Value // todo:parse
                 }
                 yield postok
-                yield! loop false postok.nextIndex rest.[postok.length..]
+                yield! loop false postok.adjacent rest.[postok.length..]
 
             | Rgx "^'([^']|'')*'(?!')" lexeme ->
                 let postok = {
@@ -305,7 +305,7 @@ let tokenize (offset:int) (input:string) =
                     value = APOSTROPHE lexeme.Value // todo:parse
                 }
                 yield postok
-                yield! loop false postok.nextIndex rest.[postok.length..]
+                yield! loop false postok.adjacent rest.[postok.length..]
 
             | Search(Regex(@"^#DIV/0!|#N/A\b|#NAME\?|#NULL!|#NUM!|#REF!|#VALUE!",RegexOptions.IgnoreCase)) lexeme ->
                 let postok = {
@@ -314,7 +314,7 @@ let tokenize (offset:int) (input:string) =
                     value = ERROR lexeme.Value // todo:parse
                 }
                 yield postok
-                yield! loop false postok.nextIndex rest.[postok.length..]
+                yield! loop false postok.adjacent rest.[postok.length..]
 
             //至少有一個$的標識符
             | Search(Regex(@"^[0-9A-Z$]*\$[0-9A-Z]+",RegexOptions.IgnoreCase)) lexeme ->
@@ -324,7 +324,7 @@ let tokenize (offset:int) (input:string) =
                     value = DOLLAR lexeme.Value // todo:parse
                 }
                 yield postok
-                yield! loop false postok.nextIndex rest.[postok.length..]
+                yield! loop false postok.adjacent rest.[postok.length..]
 
             //整数
             | Rgx @"^\d+\b(?![.])" lexeme ->
@@ -334,7 +334,7 @@ let tokenize (offset:int) (input:string) =
                     value = INTEGER lexeme.Value // todo:parse
                 }
                 yield postok
-                yield! loop false postok.nextIndex rest.[postok.length..]
+                yield! loop false postok.adjacent rest.[postok.length..]
 
             //小數
             | Rgx @"^\d+(\.\d+)?([eE][-+]?\d+)?" (lexeme) ->
@@ -344,7 +344,7 @@ let tokenize (offset:int) (input:string) =
                     value = NUMBER lexeme.Value // todo:parse
                 }
                 yield postok
-                yield! loop false postok.nextIndex rest.[postok.length..]
+                yield! loop false postok.adjacent rest.[postok.length..]
 
             //https://support.office.com/en-us/article/names-in-formulas-fc2935f9-115d-4bef-a370-3aa8bb4c91f1?omkt=en-US&ui=en-US&rs=en-US&ad=US
             | Rgx @"^[\w\\.]+" (lexeme) ->
@@ -354,17 +354,17 @@ let tokenize (offset:int) (input:string) =
                     value = ID lexeme.Value // todo:parse
                 }
                 yield postok
-                yield! loop false postok.nextIndex rest.[postok.length..]
+                yield! loop false postok.adjacent rest.[postok.length..]
 
             | _ -> failwith $"tokenize unmatched:{rest}"
         }
 
     loop true offset input
 
-let signNumber (tokens:Position<ExcelToken> list) =
+let signNumber (tokens:PositionWith<ExcelToken> list) =
     {
         index = tokens.Head.index
-        length = Position.totalLength tokens
+        length = PositionWith.totalLength tokens
         value =
             match tokens |> List.map(fun pos -> pos.value) with
             | [ NEGATIVE; (NUMBER x|INTEGER x)] -> NUMBER $"-{x}"
@@ -372,7 +372,7 @@ let signNumber (tokens:Position<ExcelToken> list) =
             | lexbuf -> failwith $"{lexbuf}"
     }
 
-let functionFromId (tokens:Position<ExcelToken> list) =
+let functionFromId (tokens:PositionWith<ExcelToken> list) =
     let postok = tokens |> List.exactlyOne
     {
         postok with
@@ -382,7 +382,7 @@ let functionFromId (tokens:Position<ExcelToken> list) =
                 | lexbuf -> failwith $"{lexbuf}" 
     }
 
-let numberFromInteger (tokens:Position<ExcelToken> list) =
+let numberFromInteger (tokens:PositionWith<ExcelToken> list) =
     let postok = tokens |> List.exactlyOne
     {
         postok with
@@ -392,7 +392,7 @@ let numberFromInteger (tokens:Position<ExcelToken> list) =
                 | lexbuf -> failwith $"{lexbuf}" 
     }
     
-let getReference (tokens:Position<ExcelToken> list) =
+let getReference (tokens:PositionWith<ExcelToken> list) =
     let range =
         match tokens |> List.map(fun pos -> pos.value) with
         | [DOLLAR x | ID x ] -> ([],[x])
@@ -408,7 +408,7 @@ let getReference (tokens:Position<ExcelToken> list) =
         | lexbuf -> failwith $"{lexbuf}"
     {
         index = tokens.Head.index
-        length = Position.totalLength tokens
+        length = PositionWith.totalLength tokens
         value = REFERENCE range
     }
     

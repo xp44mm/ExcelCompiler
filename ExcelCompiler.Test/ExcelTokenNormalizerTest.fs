@@ -4,7 +4,7 @@ open Xunit
 open Xunit.Abstractions
 open FSharp.Idioms
 open FSharp.xUnit
-open FslexFsyacc.Runtime
+open FslexFsyacc
 open ExcelCompiler.ExcelDFA
 
 type ExcelTokenNormalizerTest(output: ITestOutputHelper) =

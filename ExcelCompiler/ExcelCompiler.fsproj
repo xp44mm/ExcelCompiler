@@ -11,7 +11,7 @@
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 		<PackageReleaseNotes>update nuget</PackageReleaseNotes>
 		<PackageProjectUrl>https://github.com/xp44mm/ExcelCompiler</PackageProjectUrl>
-		<Version>1.1.14</Version>
+		<Version>1.1.15</Version>
 		<PackageReadmeFile>readme.md</PackageReadmeFile>
 		<PackageTags>excel; formula parser</PackageTags>
 	</PropertyGroup>
@@ -36,13 +36,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="FSharp.Idioms" Version="1.4.20" />
-		<PackageReference Include="FslexFsyacc.Runtime" Version="1.4.0" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<PackageReference Update="FSharp.Core" Version="8.0.300" />
-		<PackageReference Update="System.ValueTuple" Version="4.5.0" />
+		<PackageReference Update="FSharp.Core" Version="9.0.100" />
+		<PackageReference Include="FSharp.Idioms" Version="1.4.25" />
+		<PackageReference Include="FslexFsyacc" Version="1.5.4" />
 	</ItemGroup>
 
 </Project>
